@@ -1,28 +1,34 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from pydantic import BaseModel, Field, field_validator
+from typing import List
+import uuid
 
 class Message(BaseModel):
-    id: str           # Identificador único (UUID)
-    user_id: str      # Referencia al usuario
-    session_id: str   # Referencia a la sesión
-    content: str      # Texto del mensaje
-    timestamp: int    # Timestamp (BigInt)
+    id: str = Field(..., min_length=1, description="UUID del mensaje")
+    user_id: str = Field(..., min_length=1, description="UUID del usuario")
+    session_id: str = Field(..., min_length=1, description="UUID de la sesión")
+    content: str = Field(..., min_length=1, max_length=5000, description="Texto del mensaje")
+    timestamp: int = Field(..., gt=0, description="Unix timestamp en segundos")
+
+    @field_validator("id", "user_id", "session_id")
+    @classmethod
+    def no_whitespace_only(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("El campo no puede ser solo espacios en blanco")
+        return v
 
 class SDKAnalysis(BaseModel):
-    score: int
-    risk: str
+    score: int = Field(..., ge=0, le=100, description="Score de riesgo local (0-100)")
+    risk: str = Field(..., min_length=1)
     escalate: bool
-    categories: List[str]
-    termsFound: List[str]
-    triggeredRules: List[str]
+    categories: List[str] = Field(..., min_length=0)
+    termsFound: List[str] = Field(..., min_length=0)
+    triggeredRules: List[str] = Field(..., min_length=0)
     velocityFlag: bool
-    velocityWindow: int
+    velocityWindow: int = Field(..., ge=0)
 
 class EscalationRequest(BaseModel):
-    # Este es el objeto que el SDK envía cuando requiere análisis de IA
     analysis: SDKAnalysis
-    messages: List[Message]
+    messages: List[Message] = Field(..., min_length=1, description="Debe tener al menos un mensaje")
 
 class SyncMessageRequest(BaseModel):
-    # Este es para el flujo normal de guardar mensaje y recibir historial
     message: Message

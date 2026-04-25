@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List, Literal, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 class RiskLevel(str, Enum):
@@ -38,10 +38,10 @@ class ActionProtocol(BaseModel):
     emergency_contact: EmergencyContact
 
 class AnalysisData(BaseModel):
-    risk_score: int  # 0 a 100
+    risk_score: int = Field(..., ge=0, le=100)
     risk_level: RiskLevel
     detected_stage: RiskStage
-    analysis_summary: str
+    analysis_summary: str = Field(..., min_length=1)
     dataset_matches: List[str]
     action_protocol: ActionProtocol
 

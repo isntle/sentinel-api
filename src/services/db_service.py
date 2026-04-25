@@ -36,8 +36,13 @@ def save_message(db: Session, msg_data: PydanticMessage):
     # 1. Asegurar User y Session
     get_or_create_user(db, msg_data.user_id)
     session = get_or_create_session(db, msg_data.session_id)
-    
-    # 2. Crear el mensaje
+
+    # 2. Si el mensaje ya existe, no lo volvemos a insertar
+    existing = db.query(DBMessage).filter(DBMessage.id == msg_data.id).first()
+    if existing:
+        return existing
+
+    # 3. Crear el mensaje
     db_message = DBMessage(
         id=msg_data.id,
         user_id=msg_data.user_id,
@@ -45,10 +50,10 @@ def save_message(db: Session, msg_data: PydanticMessage):
         content=msg_data.content,
         timestamp=msg_data.timestamp
     )
-    
-    # 3. Actualizar actividad de la sesión
+
+    # 4. Actualizar actividad de la sesión
     session.last_activity = msg_data.timestamp
-    
+
     db.add(db_message)
     db.commit()
     return db_message
