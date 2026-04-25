@@ -17,21 +17,16 @@ app = FastAPI(
 
 @app.exception_handler(RequestValidationError)
 async def validation_error_handler(request: Request, exc: RequestValidationError):
-    errors = []
+    messages = []
     for err in exc.errors():
         field = " -> ".join(str(loc) for loc in err["loc"] if loc != "body")
-        errors.append({
-            "field": field or "body",
-            "message": err["msg"],
-            "invalid_value": err.get("input"),
-        })
+        field_label = f"El campo '{field}'" if field else "El cuerpo del request"
+        messages.append(f"{field_label}: {err['msg']}")
     return JSONResponse(
         status_code=422,
         content={
             "status": "error",
-            "code": "VALIDATION_ERROR",
-            "detail": "Los datos enviados son inválidos. Revisa los campos indicados.",
-            "errors": errors,
+            "detail": messages,
         },
     )
 
