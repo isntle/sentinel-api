@@ -6,6 +6,7 @@ from src.database import engine
 from src.models import db_models
 from src.routes.analyze import router as analyze_router
 from src.routes.messages import router as messages_router
+from src.routes.messages_crud import router as messages_crud_router
 
 db_models.Base.metadata.create_all(bind=engine)
 
@@ -65,6 +66,7 @@ async def generic_error_handler(request: Request, exc: Exception):
 
 app.include_router(analyze_router, prefix="/api/v1")
 app.include_router(messages_router, prefix="/api/v1/messages")
+app.include_router(messages_crud_router, prefix="/api/v1/admin/messages")
 
 @app.get("/health")
 def health_check():
