@@ -26,6 +26,7 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
         status_code=422,
         content={
             "status": "error",
+            "status_code": 422,
             "detail": messages,
         },
     )
@@ -36,7 +37,7 @@ async def integrity_error_handler(request: Request, exc: IntegrityError):
         status_code=409,
         content={
             "status": "error",
-            "code": "CONFLICT",
+            "status_code": 409,
             "detail": "El recurso que intentas crear ya existe.",
         },
     )
@@ -47,7 +48,7 @@ async def generic_error_handler(request: Request, exc: Exception):
         status_code=500,
         content={
             "status": "error",
-            "code": "INTERNAL_ERROR",
+            "status_code": 500,
             "detail": "Ocurrió un error interno. Intenta de nuevo más tarde.",
         },
     )
