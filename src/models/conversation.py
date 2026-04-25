@@ -1,13 +1,28 @@
-from pydantic import BaseModel #valida los datos de entrada                                                                         
-from typing import List                                                                               
-
-#modelo de datos generico, luego lo cambias said xd
+from pydantic import BaseModel
+from typing import List, Optional
 
 class Message(BaseModel):
-      sender: str
-      text: str
+    id: str           # Identificador único (UUID)
+    user_id: str      # Referencia al usuario
+    session_id: str   # Referencia a la sesión
+    content: str      # Texto del mensaje
+    timestamp: int    # Timestamp (BigInt)
 
-class ConversationRequest(BaseModel):
-      platform: str
-      minor_id: str
-      messages: List[Message]
+class SDKAnalysis(BaseModel):
+    score: int
+    risk: str
+    escalate: bool
+    categories: List[str]
+    termsFound: List[str]
+    triggeredRules: List[str]
+    velocityFlag: bool
+    velocityWindow: int
+
+class EscalationRequest(BaseModel):
+    # Este es el objeto que el SDK envía cuando requiere análisis de IA
+    analysis: SDKAnalysis
+    messages: List[Message]
+
+class SyncMessageRequest(BaseModel):
+    # Este es para el flujo normal de guardar mensaje y recibir historial
+    message: Message

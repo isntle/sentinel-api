@@ -1,46 +1,73 @@
 from google import genai
+from datetime import datetime
 from src.config.settings import GEMINI_API_KEY
-from src.models.conversation import ConversationRequest
+from src.models.conversation import EscalationRequest
+from src.models.analysis import SentinelAnalysisResponse
 
-client = genai.Client(api_key=GEMINI_API_KEY) # pues aqui le dices que pedo al gemini no? o que jasjjasj jalas la apy de config
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-def analyze_conversation(conversation: ConversationRequest) -> dict: # importante el dict para la documentacion, le dices a python que esta funcion te va a regresar un diccionario
-    messages_text = "\n".join(
-        f"{msg.sender}: {msg.text}" for msg in conversation.messages
+def analyze_conversation(escalation: EscalationRequest):
+    # 1. Preparar el historial de mensajes para la IA
+    history_text = "\n".join(
+        f"Usuario[{msg.user_id}] ({datetime.fromtimestamp(msg.timestamp).strftime('%H:%M:%S')}): {msg.content}"
+        for msg in escalation.messages
     )
-    #gemini no entiende objetos de python  [{"sender": "extraño", "text": "hola niña"}]
-    # esto lo transforma a   "extraño: hola niña"
-    # y el "\n" .join(...) pone cada mensaje en su linea
-    # no le hagas mucho caso pero aqui jalas la conversacion para hacerla en texto plano
 
-    #platform es si es tito o whasa
-    # messages es la conversacion en texto plano
+    # 2. Preparar el contexto del análisis previo del SDK
+    sdk_context = f"""
+    EL SDK DETECTÓ LO SIGUIENTE:
+    - Score Local: {escalation.analysis.score}
+    - Riesgo Inicial: {escalation.analysis.risk}
+    - Categorías Disparadas: {', '.join(escalation.analysis.categories)}
+    - Reglas MCR: {', '.join(escalation.analysis.triggeredRules)}
+    - Alerta de Velocidad: {'SÍ' if escalation.analysis.velocityFlag else 'NO'}
+    """
+
+    # 3. El Prompt Maestro (SENTINEL Core)
     prompt = f"""
-Eres SENTINEL, un sistema experto en detección de riesgo digital para menores en México.
+Eres SENTINEL, un sistema experto en detección de riesgo digital para menores en México (Grooming y Reclutamiento por Crimen Organizado).
 
-Analiza esta conversación de {conversation.platform}:
+CONTEXTO DE LA SESIÓN:
+{sdk_context}
 
-{messages_text}
+HISTORIAL DE CONVERSACIÓN:
+{history_text}
 
-Detecta si hay alguno de estos patrones de riesgo:
-- Grooming (manipulación sexual)
-- Reclutamiento del crimen organizado
-- Presión social o bullying
-- Contenido riesgoso
+TU MISIÓN:
+Analiza la intención real detrás de estos mensajes. El SDK ya detectó palabras clave, pero tú debes entender el contexto, la manipulación y la jerga criminal mexicana (como 'el jale', 'mandados', 'plaza', 'familia', etc.).
 
-Responde en JSON con este formato:
+RESPONDE ESTRICTAMENTE EN FORMATO JSON:
 {{
-  "riesgo_detectado": true/false,
-  "nivel": "alto/medio/bajo/ninguno",
-  "tipo": "nombre del patrón o null",
-  "resumen": "explicación breve para el tutor",
-  "protocolo": "acción recomendada"
+  "status": "success",
+  "data": {{
+    "risk_score": <entero 0-100>,
+    "risk_level": "LOW/MEDIUM/HIGH/CRITICAL",
+    "detected_stage": "SAFE / RECRUITMENT_INITIAL / GROOMING_APPROACH / GROOMING_ISOLATION / GROOMING_SEXUALIZATION / HARASSMENT / MANIPULATION",
+    "analysis_summary": "<explicación breve de 2 oraciones>",
+    "dataset_matches": <lista de términos detectados>,
+    "action_protocol": {{
+        "ux_recommendation": "NONE / SOFT_NUDGE / WARNING_OVERLAY / SOFT_BLOCK / HARD_BLOCK",
+        "parent_instruction": "<qué debe hacer el tutor>",
+        "emergency_contact": "088 (Policía Cibernética) / 911 (Emergencias) / SIPINNA (Protección de Menores) / CONADIC (Línea de la Vida) / NONE"
+    }}
+  }},
+  "metadata": {{
+    "session_id": "{escalation.messages[0].session_id if escalation.messages else 'unknown'}",
+    "processed_at": "{datetime.now().isoformat()}",
+    "engine_version": "v2.0-flash"
+  }}
 }}
 """
-    # aqui se cambiara por el dataset que hayan quedado tu y samuel o no se
 
-    response = client.models.generate_content( #mandas el texto a gemini y espera una respuesta
-        model="gemini-2.0-flash", # el modelo, corona, tecate etc...
-        contents=prompt
+    # 4. Llamada a Gemini
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=prompt,
+        config={
+            "response_mime_type": "application/json" # Esto fuerza a que la respuesta sea JSON puro
+        }
     )
-    return response.text #solo extrae la respuesta
+
+    # Devolvemos el JSON parseado para que FastAPI lo entregue como objeto
+    import json
+    return json.loads(response.text)

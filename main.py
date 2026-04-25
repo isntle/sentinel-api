@@ -1,5 +1,11 @@
-from fastapi import FastAPI                                                                             
-from src.routes.analyze import router  # se importa el router que ya se creo                                                               
+from fastapi import FastAPI
+from src.database import engine
+from src.models import db_models  # Importante para que Base conozca las tablas
+from src.routes.analyze import router as analyze_router
+from src.routes.messages import router as messages_router
+
+# Esta línea crea las tablas en sentinel.db si no existen
+db_models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
       title="SENTINEL API",
@@ -7,8 +13,11 @@ app = FastAPI(
       version="0.1.0"
   )
 
-app.include_router(router, prefix="/api/v1") # registra todas las routas del router en la app pero con el prefijo antes de la direccion de la routa
-#entonces la routa base que tenemos se llama asi POST /api/v1/analyze
+# Rutas de Análisis e IA
+app.include_router(analyze_router, prefix="/api/v1")
+
+# Rutas de Mensajería y Sincronización
+app.include_router(messages_router, prefix="/api/v1/messages")
 
 @app.get("/health")
 def health_check():
