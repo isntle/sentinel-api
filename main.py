@@ -30,6 +30,16 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
             "Input should be greater than or equal to 0": "debe ser mayor o igual a 0",
             "Input should be less than or equal to 100": "debe ser menor o igual a 100",
             "Value error, El campo no puede ser solo espacios en blanco": "no puede ser solo espacios en blanco",
+            "Input should be a valid integer, unable to parse string as an integer": "debe ser un número entero",
+            "Input should be a valid string": "debe ser texto",
+            "Input should be a valid boolean": "debe ser verdadero o falso",
+            "Input should be a valid list": "debe ser una lista",
+            "Input should be a valid number": "debe ser un número",
+            "Extra inputs are not permitted": "no es un campo permitido",
+            "Value is not a valid enumeration member": "tiene un valor no permitido",
+            "Input should be a valid UUID": "debe ser un UUID válido",
+            "String should match pattern": "tiene un formato inválido",
+            "Input should be a valid integer, got a number with a fractional part": "debe ser un número entero, sin decimales",
         }
         msg = translations.get(raw_msg, raw_msg)
         messages.append(f"{field_label} {msg}")
