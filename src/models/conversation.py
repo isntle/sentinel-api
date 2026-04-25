@@ -24,7 +24,7 @@ class SDKAnalysis(BaseModel):
     termsFound: List[str] = Field(..., min_length=0)
     triggeredRules: List[str] = Field(..., min_length=0)
     velocityFlag: bool
-    velocityWindow: int = Field(..., ge=0)
+    velocityWindow: int = Field(..., ge=0) or None  
 
 class EscalationRequest(BaseModel):
     analysis: SDKAnalysis
