@@ -4,8 +4,6 @@ from src.config.settings import GEMINI_API_KEY
 from src.models.conversation import EscalationRequest
 from src.models.analysis import SentinelAnalysisResponse
 
-client = genai.Client(api_key=GEMINI_API_KEY)
-
 def analyze_conversation(escalation: EscalationRequest):
     # 1. Preparar el historial de mensajes para la IA
     history_text = "\n".join(
@@ -60,6 +58,7 @@ RESPONDE ESTRICTAMENTE EN FORMATO JSON:
 """
 
     # 4. Llamada a Gemini
+    client = genai.Client(api_key=GEMINI_API_KEY)
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=prompt,
