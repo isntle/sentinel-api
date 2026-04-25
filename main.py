@@ -20,8 +20,19 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
     messages = []
     for err in exc.errors():
         field = " -> ".join(str(loc) for loc in err["loc"] if loc != "body")
-        field_label = f"El campo '{field}'" if field else "El cuerpo del request"
-        messages.append(f"{field_label}: {err['msg']}")
+        field_label = f"El campo '{field}'" if field else "El cuerpo de la solicitud"
+        raw_msg = err['msg']
+        translations = {
+            "Field required": "es obligatorio",
+            "String should have at least 1 character": "no puede estar vacío",
+            "String should have at most 5000 characters": "no puede superar los 5000 caracteres",
+            "Input should be greater than 0": "debe ser mayor a 0",
+            "Input should be greater than or equal to 0": "debe ser mayor o igual a 0",
+            "Input should be less than or equal to 100": "debe ser menor o igual a 100",
+            "Value error, El campo no puede ser solo espacios en blanco": "no puede ser solo espacios en blanco",
+        }
+        msg = translations.get(raw_msg, raw_msg)
+        messages.append(f"{field_label} {msg}")
     return JSONResponse(
         status_code=422,
         content={
