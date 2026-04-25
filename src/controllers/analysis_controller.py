@@ -1,11 +1,13 @@
-from fastapi import HTTPException  #asi se regresa errores http con codigo y mensaje                                                                     
-from src.models.conversation import ConversationRequest                                               
+from src.models.conversation import EscalationRequest
 from src.services.analysis_service import analyze_conversation
 
-def handle_analyze(conversation: ConversationRequest):
-      if not conversation.messages: # no le dices nada a gemini si no hay mensajes
-          raise HTTPException(status_code=400, detail="La conversación no tiene mensajes") 
-      #corta la ejecucion y regresa error al cliente antes de gastar tokens
-
-      result = analyze_conversation(conversation) #llama al servicio de service ese con el promp bien insano
-      return {"success": True, "analysis": result} # devuelve el resultado en una respuesta limpia el estado y el resultado
+def handle_escalation(escalation: EscalationRequest):
+    """
+    Recibe la escalación del SDK (análisis local + mensajes)
+    y delega el análisis profundo a la IA.
+    """
+    # Aquí ya no evaluamos el score, confiamos en la decisión de escalado del SDK.
+    # Enviamos todo el paquete al servicio de Gemini.
+    result = analyze_conversation(escalation)
+    
+    return result
