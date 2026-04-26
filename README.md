@@ -330,7 +330,7 @@ La API está desplegada en **Railway** con Python 3.13.
 
 ## Licencia
 
-MIT License — Copyright (c) 2026 Samuel Tlahuel
+MIT License — Copyright (c) 2026 Startuplab MX
 
 Este proyecto fue desarrollado durante el **Hackathon 404 · Marriott Reforma CDMX · Abril 2026** y se publica como código abierto bajo licencia MIT como condición de participación.
 

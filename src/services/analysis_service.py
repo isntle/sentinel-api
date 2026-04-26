@@ -73,7 +73,7 @@ RESPONDE SOLO EN JSON con esta estructura exacta:
   "ux_recommendation": "NONE" | "SOFT_NUDGE" | "WARNING_OVERLAY" | "SOFT_BLOCK" | "HARD_BLOCK",
   "stage": "NINGUNA" | "CAPTACION" | "INDUCCION/COOPTACION" | "INCUBACION" | "UTILIZACION/INSTRUMENTALIZACION",
   "confidence": <número entre 0.0 y 1.0>,
-  "summary": "<una línea para dashboard del desarrollador, no para el usuario final>",
+  "summary": "<mensaje corto y claro dirigido directamente al usuario final (puede ser un niño o un adulto). Reglas obligatorias: 1) Habla en segundo persona ('tú'), de forma cálida y cercana. 2) Lenguaje muy simple, frases cortas, palabras comunes — debe entenderlo un niño de 10 años. 3) NO menciones que hubo un análisis ni que un sistema lo revisó. 4) Explica en términos humanos qué está pasando y qué puede hacer la persona (por ejemplo: 'esta persona te está ofreciendo dinero a cambio de algo que puede ser peligroso, mejor cuéntale a alguien de confianza'). 5) Si es false_positive, tranquiliza con un mensaje breve y amable. 6) Máximo 2 oraciones.>",
   "false_positive": <true | false>
 }}
 
