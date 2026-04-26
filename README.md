@@ -88,8 +88,8 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # 4. Configurar variables de entorno
-cp .env.example .env
-# Editar .env y agregar tu GROQ_API_KEY
+# Crear un archivo .env en la raíz del proyecto con:
+# GROQ_API_KEY=tu_api_key_aqui
 
 # 5. Levantar el servidor
 uvicorn main:app --reload
@@ -250,4 +250,4 @@ MIT License — Copyright (c) 2026 Samuel Tlahuel
 
 Este proyecto fue desarrollado durante el **Hackathon 404 · Marriott Reforma CDMX · Abril 2026** y se publica como código abierto bajo licencia MIT como condición de participación.
 
-El SDK incluye el archivo [LICENSE](../sentinel-sdk/LICENSE) con el texto completo de la licencia MIT.
+Ver archivo [LICENSE](./LICENSE) para el texto completo.
