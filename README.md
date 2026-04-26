@@ -237,11 +237,10 @@ La API está desplegada en **Railway** con Python 3.13.
 
 ## Integrantes del equipo
 
-| Nombre | Rol |
-|---|---|
-| Samuel Tlahuel | SDK TypeScript, arquitectura del motor de detección |
-| Luis Mérida | API Backend, infraestructura, base de datos |
-| *(completar con el resto del equipo)* | |
+- Samuel Tlahuel
+- Luis Mérida
+- David Peña
+- Said Ferreira
 
 ---
 
