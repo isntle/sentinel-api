@@ -20,7 +20,7 @@ def handle_sync_message(db: Session, request: SyncMessageRequest) -> List[Messag
     save_message(db, full_message)
     
     # 2. Recuperar todo el historial de esa sesión desde la DB
-    db_history = get_session_history(db, request.message.session_id)
+    db_history = get_session_history(db, request.message.session_id, request.message.user_id)
     
     # 3. Convertir los objetos de la DB al formato que el SDK entiende (Pydantic)
     history = [
