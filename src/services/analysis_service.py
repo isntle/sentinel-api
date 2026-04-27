@@ -3,6 +3,71 @@ from groq import Groq
 from src.config.settings import GROQ_API_KEY
 from src.models.conversation import EscalationRequest
 
+UX_LEVELS = ["NONE", "SOFT_NUDGE", "WARNING_OVERLAY", "SOFT_BLOCK", "HARD_BLOCK"]
+
+
+def _bump_ux(level: str) -> str:
+    idx = UX_LEVELS.index(level) if level in UX_LEVELS else 0
+    return UX_LEVELS[min(idx + 1, len(UX_LEVELS) - 1)]
+
+
+def _fallback_from_sdk(escalation: EscalationRequest, reason: str) -> dict:
+    """
+    Cierra el circuito cuando la IA no está disponible.
+    Construye una respuesta segura usando los datos del SDK (score, capas, velocityFlag).
+    """
+    score = escalation.score
+    v3 = escalation.layers.v3
+    v4 = escalation.layers.v4
+
+    has_explicit = bool(v4.explicitSignals)
+    has_lexical = bool(v3.categories) or bool(v3.terms)
+
+    if score >= 85 or (has_explicit and score >= 70):
+        ux = "HARD_BLOCK"
+        stage = "UTILIZACION/INSTRUMENTALIZACION"
+        confidence = 0.75
+        false_positive = False
+        summary = "Lo que está pasando aquí es muy peligroso para ti. Aléjate de esta conversación y cuéntale ahora mismo a un adulto de confianza."
+    elif score >= 70:
+        ux = "SOFT_BLOCK"
+        stage = "INCUBACION"
+        confidence = 0.65
+        false_positive = False
+        summary = "Esta persona te está presionando para algo que puede hacerte daño. Mejor no sigas y busca a alguien de confianza para contarle."
+    elif score >= 50:
+        ux = "WARNING_OVERLAY"
+        stage = "INDUCCION/COOPTACION"
+        confidence = 0.55
+        false_positive = False
+        summary = "Ten cuidado con esta conversación: parece que quieren convencerte de algo riesgoso. Si te sientes incómodo, no respondas y habla con alguien que te cuide."
+    elif score >= 30 or has_lexical or has_explicit:
+        ux = "SOFT_NUDGE"
+        stage = "CAPTACION"
+        confidence = 0.45
+        false_positive = False
+        summary = "Esta persona podría estar ofreciéndote algo que parece bueno, pero puede ser una trampa. Tómate tu tiempo y cuéntaselo a alguien que te cuide."
+    else:
+        ux = "NONE"
+        stage = "NINGUNA"
+        confidence = 0.3
+        false_positive = True
+        summary = "Todo parece estar bien por ahora. Sigue cuidándote y habla con alguien de confianza si algo te incomoda."
+
+    if escalation.velocityFlag and ux != "NONE":
+        ux = _bump_ux(ux)
+
+    return {
+        "ux_recommendation": ux,
+        "stage": stage,
+        "confidence": confidence,
+        "summary": summary,
+        "false_positive": false_positive,
+        "fallback": True,
+        "fallback_reason": reason,
+    }
+
+
 def analyze_conversation(escalation: EscalationRequest):
     v3 = escalation.layers.v3
     v4 = escalation.layers.v4
@@ -86,11 +151,18 @@ Criterios de ux_recommendation:
 - velocityFlag activo sube un nivel de recomendación
 """
 
-    client = Groq(api_key=GROQ_API_KEY)
-    response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
+    if not GROQ_API_KEY:
+        return _fallback_from_sdk(escalation, "GROQ_API_KEY no configurada")
 
-    return json.loads(response.choices[0].message.content)
+    try:
+        client = Groq(api_key=GROQ_API_KEY)
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
+        )
+        return json.loads(response.choices[0].message.content)
+    except json.JSONDecodeError as exc:
+        return _fallback_from_sdk(escalation, f"Respuesta de IA inválida: {exc}")
+    except Exception as exc:
+        return _fallback_from_sdk(escalation, f"IA no disponible: {exc}")
