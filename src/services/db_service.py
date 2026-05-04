@@ -58,14 +58,9 @@ def save_message(db: Session, msg_data: PydanticMessage):
     db.commit()
     return db_message
 
-def get_session_history(db: Session, session_id: str, user_id: str):
-    """Recupera los mensajes de un usuario en una sesión ordenados por tiempo."""
-    return (
-        db.query(DBMessage)
-        .filter(DBMessage.session_id == session_id, DBMessage.user_id == user_id)
-        .order_by(DBMessage.timestamp.asc())
-        .all()
-    )
+def get_session_history(db: Session, session_id: str):
+    """Recupera todos los mensajes de una sesión ordenados por tiempo."""
+    return db.query(DBMessage).filter(DBMessage.session_id == session_id).order_by(DBMessage.timestamp.asc()).all()
 
 def get_all_messages(db: Session):
     return db.query(DBMessage).order_by(DBMessage.timestamp.asc()).all()
