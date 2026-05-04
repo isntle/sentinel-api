@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Table
+from sqlalchemy import Column, String, Integer, Float, Boolean, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from src.database import Base
 
@@ -45,3 +45,15 @@ class Message(Base):
     # Relaciones para navegar fácilmente entre objetos
     user = relationship("User", back_populates="messages")
     session = relationship("Session", back_populates="messages")
+
+class HotTerm(Base):
+    __tablename__ = "hot_terms"
+
+    id = Column(String, primary_key=True)          # UUID generado por la API
+    term = Column(String, nullable=False)           # el término nuevo
+    category = Column(String, nullable=False)       # reclutamiento, grooming, etc.
+    weight = Column(Float, nullable=False)          # peso en el scoring (igual que dataset)
+    variants = Column(String, nullable=True)        # variantes separadas por coma
+    source = Column(String, nullable=True)          # de dónde vino el término
+    approved = Column(Boolean, default=False)       # True = ya validado, se sirve al SDK
+    created_at = Column(Integer, nullable=False)    # Unix timestamp
