@@ -135,6 +135,27 @@ Todas las respuestas siguen la estructura:
 }
 ```
 
+**Respuesta:**
+```json
+{
+  "success": true,
+  "status_code": 200,
+  "data": [
+    {
+      "id": "uuid-generado",
+      "user_id": "uuid-del-usuario",
+      "session_id": "uuid-de-la-sesion",
+      "content": "texto del mensaje",
+      "timestamp": 1745600000
+    }
+  ]
+}
+```
+
+> `data` es un array con todos los mensajes de esa sesión ordenados por timestamp, incluyendo el que se acaba de registrar.
+
+---
+
 ### Análisis con IA
 
 | Método | Ruta | Descripción |
@@ -144,16 +165,33 @@ Todas las respuestas siguen la estructura:
 **Body:**
 ```json
 {
-  "analysis": {
-    "score": 85,
-    "risk": "HIGH",
-    "escalate": true,
-    "categories": ["reclutamiento"],
-    "termsFound": ["jale", "plaza"],
-    "triggeredRules": ["rule_grooming_1"],
-    "velocityFlag": false,
-    "velocityWindow": 0
+  "score": 85,
+  "risk": "HIGH",
+  "escalate": true,
+  "layers": {
+    "normalizer": {
+      "score": 40,
+      "features": ["leetspeak"],
+      "triggeredRules": [],
+      "transformations": ["l33t"]
+    },
+    "v3": {
+      "score": 75,
+      "terms": ["jale", "plaza"],
+      "categories": ["reclutamiento"],
+      "triggeredRules": ["rule_grooming_1"]
+    },
+    "v4": {
+      "score": 90,
+      "features": ["oferta_economica"],
+      "triggeredRules": ["rule_explicit_1"],
+      "explicitSignals": ["oferta de trabajo ilegal"]
+    }
   },
+  "velocityFlag": false,
+  "velocityWindow": 0,
+  "messagesAnalyzed": 3,
+  "uniqueCategories": ["reclutamiento"],
   "messages": [
     {
       "id": "uuid",
@@ -172,15 +210,23 @@ Todas las respuestas siguen la estructura:
   "success": true,
   "status_code": 200,
   "data": {
-    "score": 85,
-    "risk": "HIGH",
+    "ux_recommendation": "SOFT_BLOCK",
     "stage": "CAPTACION",
-    "categories": ["reclutamiento"],
-    "termsFound": ["jale", "plaza"],
-    "ux_recommendation": "SOFT_BLOCK"
+    "confidence": 0.87,
+    "summary": "Oferta de trabajo ilegal dirigida a menor con terminología de reclutamiento confirmada.",
+    "false_positive": false
   }
 }
 ```
+
+| Campo | Valores posibles |
+|---|---|
+| `ux_recommendation` | `NONE`, `SOFT_NUDGE`, `WARNING_OVERLAY`, `SOFT_BLOCK`, `HARD_BLOCK` |
+| `stage` | `NINGUNA`, `CAPTACION`, `INDUCCION/COOPTACION`, `INCUBACION`, `UTILIZACION/INSTRUMENTALIZACION` |
+| `confidence` | `0.0` – `1.0` |
+| `false_positive` | `true` / `false` |
+
+---
 
 ### Administración (CRUD de mensajes)
 
@@ -193,11 +239,49 @@ Para uso exclusivo del equipo de desarrollo. Permite gestionar mensajes sin acce
 | `PATCH` | `/api/v1/admin/messages/{id}` | Editar el contenido de un mensaje |
 | `DELETE` | `/api/v1/admin/messages/{id}` | Eliminar un mensaje |
 
+**Body para PATCH:**
+```json
+{ "content": "nuevo texto del mensaje" }
+```
+
+**Respuesta GET (lista):**
+```json
+{
+  "success": true,
+  "status_code": 200,
+  "data": [
+    {
+      "id": "uuid",
+      "user_id": "uuid",
+      "session_id": "uuid",
+      "content": "texto",
+      "timestamp": 1745600000
+    }
+  ]
+}
+```
+
+**Respuesta DELETE:**
+```json
+{
+  "success": true,
+  "status_code": 200,
+  "data": "Mensaje 'uuid' eliminado correctamente."
+}
+```
+
+---
+
 ### Health check
 
 | Método | Ruta | Descripción |
 |---|---|---|
 | `GET` | `/health` | Verificar que la API está activa |
+
+**Respuesta:**
+```json
+{ "status": "ok", "service": "SENTINEL" }
+```
 
 ---
 
@@ -246,7 +330,7 @@ La API está desplegada en **Railway** con Python 3.13.
 
 ## Licencia
 
-MIT License — Copyright (c) 2026 Samuel Tlahuel
+MIT License — Copyright (c) 2026 Startuplab MX
 
 Este proyecto fue desarrollado durante el **Hackathon 404 · Marriott Reforma CDMX · Abril 2026** y se publica como código abierto bajo licencia MIT como condición de participación.
 

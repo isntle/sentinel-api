@@ -1,72 +1,96 @@
-from google import genai
-from datetime import datetime
-from src.config.settings import GEMINI_API_KEY
+import json
+from groq import Groq
+from src.config.settings import GROQ_API_KEY
 from src.models.conversation import EscalationRequest
-from src.models.analysis import SentinelAnalysisResponse
 
 def analyze_conversation(escalation: EscalationRequest):
-    # 1. Preparar el historial de mensajes para la IA
-    history_text = "\n".join(
-        f"Usuario[{msg.user_id}] ({datetime.fromtimestamp(msg.timestamp).strftime('%H:%M:%S')}): {msg.content}"
-        for msg in escalation.messages
+    v3 = escalation.layers.v3
+    v4 = escalation.layers.v4
+    normalizer = escalation.layers.normalizer
+
+    conversation_text = "\n".join(
+        f"{msg.user_id}: {msg.content}" for msg in escalation.messages
     )
 
-    # 2. Preparar el contexto del análisis previo del SDK
-    sdk_context = f"""
-    EL SDK DETECTÓ LO SIGUIENTE:
-    - Score Local: {escalation.analysis.score}
-    - Riesgo Inicial: {escalation.analysis.risk}
-    - Categorías Disparadas: {', '.join(escalation.analysis.categories)}
-    - Reglas MCR: {', '.join(escalation.analysis.triggeredRules)}
-    - Alerta de Velocidad: {'SÍ' if escalation.analysis.velocityFlag else 'NO'}
-    """
+    velocity_note = (
+        "Los mensajes fueron enviados en ráfaga corta (ventana de actividad alta), "
+        "lo que indica contacto intensivo y sostenido con el menor."
+        if escalation.velocityFlag else ""
+    )
 
-    # 3. El Prompt Maestro (SENTINEL Core)
+    evasion_note = (
+        f"El texto presenta transformaciones de evasión ({', '.join(normalizer.transformations)}), "
+        "lo que indica intención deliberada de ocultar el contenido."
+        if normalizer.transformations else ""
+    )
+
     prompt = f"""
-Eres SENTINEL, un sistema experto en detección de riesgo digital para menores en México (Grooming y Reclutamiento por Crimen Organizado).
+Eres un experto en seguridad infantil y prevención del reclutamiento de menores por parte del crimen organizado en México.
 
-CONTEXTO DE LA SESIÓN:
-{sdk_context}
+El sistema de detección analizó esta conversación y encontró lo siguiente:
 
-HISTORIAL DE CONVERSACIÓN:
-{history_text}
+SCORE GLOBAL DE RIESGO: {escalation.score}/100 ({escalation.risk})
 
-TU MISIÓN:
-Analiza la intención real detrás de estos mensajes. El SDK ya detectó palabras clave, pero tú debes entender el contexto, la manipulación y la jerga criminal mexicana (como 'el jale', 'mandados', 'plaza', 'familia', etc.).
+CAPA LÉXICA (v3):
+- Score: {v3.score}/100
+- Categorías detectadas: {", ".join(v3.categories) if v3.categories else "ninguna"}
+- Términos clave: {", ".join(v3.terms) if v3.terms else "ninguno"}
+- Reglas activadas: {", ".join(v3.triggeredRules) if v3.triggeredRules else "ninguna"}
 
-RESPONDE ESTRICTAMENTE EN FORMATO JSON:
+CAPA DE SEÑALES EXPLÍCITAS (v4):
+- Score: {v4.score}/100
+- Señales explícitas: {", ".join(v4.explicitSignals) if v4.explicitSignals else "ninguna"}
+- Features: {", ".join(v4.features) if v4.features else "ninguna"}
+- Reglas activadas: {", ".join(v4.triggeredRules) if v4.triggeredRules else "ninguna"}
+
+CAPA DE NORMALIZACIÓN:
+- Score: {normalizer.score}/100
+- Features: {", ".join(normalizer.features) if normalizer.features else "ninguna"}
+{evasion_note}
+
+{velocity_note}
+
+Categorías únicas del análisis: {", ".join(escalation.uniqueCategories) if escalation.uniqueCategories else "ninguna"}
+Mensajes analizados: {escalation.messagesAnalyzed}
+
+CONVERSACIÓN:
+{conversation_text}
+
+Tu tarea es determinar si esta conversación corresponde a un proceso de reclutamiento de menores por parte del crimen organizado (narcotráfico, pandillas, grupos delictivos).
+
+Las etapas del proceso son:
+- NINGUNA: Sin señales de reclutamiento
+- CAPTACION: Primer contacto, oferta de dinero fácil, promesas, halago al menor
+- INDUCCION/COOPTACION: Normalización del crimen, presión social, pruebas de lealtad
+- INCUBACION: El menor ya tiene tareas asignadas, hay dependencia económica o amenaza
+- UTILIZACION/INSTRUMENTALIZACION: El menor está siendo usado activamente (halconeo, distribución, sicariato)
+
+IMPORTANTE: Si las tres capas tienen scores bajos y los términos son ambiguos o de contexto común (música, slang juvenil sin contexto delictivo), marca como false_positive: true.
+Si v4 tiene señales explícitas de reclutamiento y v3 confirma terminología delictiva, la confianza sube.
+
+RESPONDE SOLO EN JSON con esta estructura exacta:
 {{
-  "status": "success",
-  "data": {{
-    "risk_score": <entero 0-100>,
-    "risk_level": "LOW/MEDIUM/HIGH/CRITICAL",
-    "detected_stage": "SAFE / RECRUITMENT_INITIAL / GROOMING_APPROACH / GROOMING_ISOLATION / GROOMING_SEXUALIZATION / HARASSMENT / MANIPULATION",
-    "analysis_summary": "<explicación breve de 2 oraciones>",
-    "dataset_matches": <lista de términos detectados>,
-    "action_protocol": {{
-        "ux_recommendation": "NONE / SOFT_NUDGE / WARNING_OVERLAY / SOFT_BLOCK / HARD_BLOCK",
-        "parent_instruction": "<qué debe hacer el tutor>",
-        "emergency_contact": "088 (Policía Cibernética) / 911 (Emergencias) / SIPINNA (Protección de Menores) / CONADIC (Línea de la Vida) / NONE"
-    }}
-  }},
-  "metadata": {{
-    "session_id": "{escalation.messages[0].session_id if escalation.messages else 'unknown'}",
-    "processed_at": "{datetime.now().isoformat()}",
-    "engine_version": "v2.0-flash"
-  }}
+  "ux_recommendation": "NONE" | "SOFT_NUDGE" | "WARNING_OVERLAY" | "SOFT_BLOCK" | "HARD_BLOCK",
+  "stage": "NINGUNA" | "CAPTACION" | "INDUCCION/COOPTACION" | "INCUBACION" | "UTILIZACION/INSTRUMENTALIZACION",
+  "confidence": <número entre 0.0 y 1.0>,
+  "summary": "<mensaje corto y claro dirigido directamente al usuario final (puede ser un niño o un adulto). Reglas obligatorias: 1) Habla en segundo persona ('tú'), de forma cálida y cercana. 2) Lenguaje muy simple, frases cortas, palabras comunes — debe entenderlo un niño de 10 años. 3) NO menciones que hubo un análisis ni que un sistema lo revisó. 4) Explica en términos humanos qué está pasando y qué puede hacer la persona (por ejemplo: 'esta persona te está ofreciendo dinero a cambio de algo que puede ser peligroso, mejor cuéntale a alguien de confianza'). 5) Si es false_positive, tranquiliza con un mensaje breve y amable. 6) Máximo 2 oraciones.>",
+  "false_positive": <true | false>
 }}
+
+Criterios de ux_recommendation:
+- NINGUNA + confianza baja → NONE
+- CAPTACION → SOFT_NUDGE o WARNING_OVERLAY según confianza
+- INDUCCION/COOPTACION → WARNING_OVERLAY o SOFT_BLOCK
+- INCUBACION → SOFT_BLOCK
+- UTILIZACION/INSTRUMENTALIZACION → HARD_BLOCK
+- velocityFlag activo sube un nivel de recomendación
 """
 
-    # 4. Llamada a Gemini
-    client = genai.Client(api_key=GEMINI_API_KEY)
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt,
-        config={
-            "response_mime_type": "application/json" # Esto fuerza a que la respuesta sea JSON puro
-        }
+    client = Groq(api_key=GROQ_API_KEY)
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={"type": "json_object"},
     )
 
-    # Devolvemos el JSON parseado para que FastAPI lo entregue como objeto
-    import json
-    return json.loads(response.text)
+    return json.loads(response.choices[0].message.content)
