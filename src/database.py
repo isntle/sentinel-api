@@ -1,15 +1,15 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Nombre del archivo de la base de datos
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sentinel.db"
+# En Railway/producción, DATABASE_URL apunta al Postgres persistente (requirements.txt
+# ya trae psycopg2-binary para esto). Si no está definida (dev local), cae a SQLite.
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./sentinel.db")
 
 # El motor (engine) se encarga de la conexión física
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, 
-    connect_args={"check_same_thread": False} # Requerido para SQLite y FastAPI
-)
+connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
 
 # Sesión local para interactuar con la DB
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
