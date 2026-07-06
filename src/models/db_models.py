@@ -56,4 +56,62 @@ class HotTerm(Base):
     variants = Column(String, nullable=True)        # variantes separadas por coma
     source = Column(String, nullable=True)          # de dónde vino el término
     approved = Column(Boolean, default=False)       # True = ya validado, se sirve al SDK
+    staged = Column(Boolean, default=False)         # True = aprobado por IA, esperando revisión
     created_at = Column(Integer, nullable=False)    # Unix timestamp
+
+class DatasetVersion(Base):
+    __tablename__ = "dataset_versions"
+
+    version = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(Integer, nullable=False)
+    description = Column(String, nullable=True)
+    terms_snapshot = Column(String, nullable=False) # JSON list of hot terms in this version
+
+class RejectedTerm(Base):
+    __tablename__ = "rejected_terms"
+
+    id = Column(String, primary_key=True)
+    term = Column(String, nullable=False)
+    source = Column(String, nullable=True)
+    reasoning = Column(String, nullable=True)
+    rejected_at = Column(Integer, nullable=False)
+
+class CandidateSighting(Base):
+    __tablename__ = "candidate_sightings"
+
+    id = Column(String, primary_key=True)
+    term = Column(String, nullable=False)
+    source = Column(String, nullable=False)
+    context = Column(String, nullable=True)
+    seen_at = Column(Integer, nullable=False)
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(String, primary_key=True)
+    session_id = Column(String, nullable=False)
+    verdict_original = Column(String, nullable=False)  # JSON string with risk, score, terms
+    feedback_type = Column(String, nullable=False)     # 'false_positive', 'false_negative', 'confirmed'
+    comment = Column(String, nullable=True)
+    reported_by = Column(String, nullable=False)
+    created_at = Column(Integer, nullable=False)
+
+class ApiKey(Base):
+    __tablename__ = "api_keys"
+
+    key_hash = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    scope = Column(String, nullable=False)          # 'client' | 'admin'
+    created_at = Column(Integer, nullable=False)
+    revoked_at = Column(Integer, nullable=True)
+    last_used_at = Column(Integer, nullable=True)
+
+class ScraperRun(Base):
+    __tablename__ = "scraper_runs"
+
+    id = Column(String, primary_key=True)
+    started_at = Column(Integer, nullable=False)
+    finished_at = Column(Integer, nullable=True)
+    status = Column(String, nullable=False) # 'running', 'success', 'failed'
+    results = Column(String, nullable=True) # JSON string
+    error = Column(String, nullable=True)

@@ -1,8 +1,13 @@
 import httpx
 import re
+import uuid
+import feedparser
+from datetime import datetime
 from sqlalchemy.orm import Session
-from src.services.hot_terms_service import classify_and_approve_term
-from src.models.db_models import HotTerm
+from src.services.hot_terms_service import classify_terms_batch
+from src.services.candidate_scorer import get_mature_candidates
+from src.models.db_models import HotTerm, RejectedTerm, CandidateSighting
+from src.config.settings import YOUTUBE_API_KEY, GENIUS_API_TOKEN
 
 # ─── Configuración de fuentes ────────────────────────────────────────────────
 
@@ -70,10 +75,12 @@ def _is_spanish(text: str) -> bool:
 
 
 def _term_already_known(db: Session, term: str) -> bool:
-    """Verifica si el término ya está en hot_terms."""
-    return db.query(HotTerm).filter(
-        HotTerm.term == term.lower().strip()
-    ).first() is not None
+    """Verifica si el término ya está en hot_terms o en rejected_terms."""
+    clean_term = term.lower().strip()
+    is_hot = db.query(HotTerm).filter(HotTerm.term == clean_term).first() is not None
+    if is_hot:
+        return True
+    return db.query(RejectedTerm).filter(RejectedTerm.term == clean_term).first() is not None
 
 
 def _extract_candidates(text: str, quoted_only: bool = False) -> list[str]:
@@ -137,7 +144,11 @@ def _scrape_reddit(client: httpx.Client) -> list[dict]:
                     for term in _extract_candidates(text, quoted_only=True):
                         if re.search(r'[/\\.0-9]', term) or len(term) < 3:
                             continue
-                        found.append({"term": term, "source": f"Reddit r/{subreddit}"})
+                        found.append({
+                            "term": term, 
+                            "source": f"Reddit r/{subreddit}",
+                            "context": text[:300]
+                        })
 
             except Exception:
                 continue
@@ -170,7 +181,11 @@ def _scrape_borderland_beat(client: httpx.Client) -> list[dict]:
                 # quoted_only=True porque el sitio está en inglés
                 # solo nos interesan los términos en español que aparecen entre comillas
                 for term in _extract_candidates(clean, quoted_only=True):
-                    found.append({"term": term, "source": "Borderland Beat"})
+                    found.append({
+                        "term": term, 
+                        "source": "Borderland Beat",
+                        "context": clean[:300]
+                    })
 
         except Exception:
             continue
@@ -178,19 +193,210 @@ def _scrape_borderland_beat(client: httpx.Client) -> list[dict]:
     return found
 
 
+def _scrape_youtube(client: httpx.Client) -> list[dict]:
+    """
+    Busca comentarios en videos de YouTube sobre noticias de narco o reclutamiento.
+    Usa la YouTube Data API v3 con la key configurada.
+    """
+    if not YOUTUBE_API_KEY:
+        return []
+
+    queries = [
+        "reclutamiento cartel",
+        "narco noticias méxico",
+        "corridos bélicos 2026"
+    ]
+    found = []
+
+    for query in queries[:2]:
+        try:
+            search_url = "https://www.googleapis.com/youtube/v3/search"
+            params = {
+                "key": YOUTUBE_API_KEY,
+                "q": query,
+                "part": "snippet",
+                "type": "video",
+                "maxResults": 5,
+                "relevanceLanguage": "es",
+                "regionCode": "MX",
+                "order": "date"
+            }
+            response = client.get(search_url, params=params, timeout=10)
+            if response.status_code != 200:
+                continue
+
+            search_data = response.json()
+            items = search_data.get("items", [])
+
+            for item in items:
+                video_id = item.get("id", {}).get("videoId")
+                if not video_id:
+                    continue
+
+                comments_url = "https://www.googleapis.com/youtube/v3/commentThreads"
+                comment_params = {
+                    "key": YOUTUBE_API_KEY,
+                    "videoId": video_id,
+                    "part": "snippet",
+                    "maxResults": 50,
+                    "textFormat": "plainText"
+                }
+                comments_resp = client.get(comments_url, params=comment_params, timeout=10)
+                if comments_resp.status_code != 200:
+                    continue
+
+                comments_data = comments_resp.json()
+                threads = comments_data.get("items", [])
+
+                for thread in threads:
+                    snippet = thread.get("snippet", {}).get("topLevelComment", {}).get("snippet", {})
+                    text = snippet.get("textDisplay", "")
+                    if not text or not _is_spanish(text):
+                        continue
+
+                    for term in _extract_candidates(text, quoted_only=False):
+                        if re.search(r'[/\\.0-9]', term) or len(term) < 3:
+                            continue
+                        found.append({
+                            "term": term,
+                            "source": f"YouTube {video_id}",
+                            "context": text[:300]
+                        })
+        except Exception:
+            continue
+
+    return found
+
+
+def _scrape_lyrics(client: httpx.Client) -> list[dict]:
+    """
+    Busca letras de canciones de artistas populares de corridos bélicos en Genius
+    y extrae candidatos (quoted_only=False).
+    """
+    if not GENIUS_API_TOKEN:
+        return []
+
+    artists = ["Peso Pluma", "Luis R Conriquez", "Fuerza Regida"]
+    found = []
+
+    headers = {
+        "Authorization": f"Bearer {GENIUS_API_TOKEN}",
+        "User-Agent": HEADERS["User-Agent"]
+    }
+
+    for artist in artists:
+        try:
+            search_url = "https://api.genius.com/search"
+            params = {"q": artist}
+            response = client.get(search_url, params=params, headers=headers, timeout=10)
+            if response.status_code != 200:
+                continue
+
+            data = response.json()
+            hits = data.get("response", {}).get("hits", [])
+
+            for hit in hits[:3]:
+                song_data = hit.get("result", {})
+                song_title = song_data.get("title", "")
+                song_url = song_data.get("url")
+                if not song_url:
+                    continue
+
+                lyrics_resp = client.get(song_url, headers=HEADERS, timeout=10)
+                if lyrics_resp.status_code != 200:
+                    continue
+
+                html_content = lyrics_resp.text
+                
+                # Intentar varios selectores comunes de Genius
+                lyrics_containers = re.findall(r'<div[^>]*data-lyrics-container="true"[^>]*>(.*?)</div>', html_content, re.DOTALL)
+                if not lyrics_containers:
+                    lyrics_containers = re.findall(r'<div[^>]*class="[^"]*Lyrics__Container[^"]*"[^>]*>(.*?)</div>', html_content, re.DOTALL)
+                if not lyrics_containers:
+                    lyrics_containers = re.findall(r'<div[^>]*class="[^"]*lyrics[^"]*"[^>]*>(.*?)</div>', html_content, re.DOTALL)
+
+                if not lyrics_containers:
+                    continue
+
+                full_lyrics = ""
+                for container in lyrics_containers:
+                    clean_text = re.sub(r'<[^>]+>', ' ', container)
+                    clean_text = clean_text.replace("&nbsp;", " ").replace("&amp;", "&").replace("&#39;", "'").replace("&quot;", '"')
+                    full_lyrics += clean_text + "\n"
+
+                if not full_lyrics:
+                    continue
+
+                for term in _extract_candidates(full_lyrics, quoted_only=False):
+                    if re.search(r'[/\\.0-9]', term) or len(term) < 3:
+                        continue
+                    found.append({
+                        "term": term,
+                        "source": f"Corrido: {artist} - {song_title}",
+                        "context": full_lyrics[:300]
+                    })
+        except Exception:
+            continue
+
+    return found
+
+
+def _scrape_news_rss(client: httpx.Client) -> list[dict]:
+    """
+    Parsea feeds RSS de noticias de seguridad y crimen en México.
+    Extrae candidatos (quoted_only=True) de títulos y descripciones.
+    """
+    feeds = {
+        "Río Doce": "https://riodoce.mx/feed/",
+        "ZETA Tijuana": "https://zetatijuana.com/feed/",
+        "Proceso": "https://www.proceso.com.mx/rss/feed.html",
+        "La Silla Rota": "https://lasillarota.com/rss/feed.html"
+    }
+    
+    found = []
+    
+    for name, url in feeds.items():
+        try:
+            response = client.get(url, headers=HEADERS, timeout=10)
+            if response.status_code != 200:
+                continue
+                
+            feed = feedparser.parse(response.text)
+            entries = feed.get("entries", [])
+            
+            for entry in entries[:15]:
+                title = entry.get("title", "")
+                summary = entry.get("summary", "") or entry.get("description", "")
+                text = f"{title} {summary}"
+                text = re.sub(r'<[^>]+>', ' ', text)
+                
+                for term in _extract_candidates(text, quoted_only=True):
+                    if re.search(r'[/\\.0-9]', term) or len(term) < 3:
+                        continue
+                    found.append({
+                        "term": term,
+                        "source": f"RSS: {name}",
+                        "context": text[:300]
+                    })
+        except Exception:
+            continue
+            
+    return found
+
+
 def run_scraper(db: Session) -> dict:
     """
     Proceso completo:
-    1. Scraping de Reddit y Borderland Beat
+    1. Scraping de Reddit, Borderland Beat, YouTube, Corridos y RSS
     2. Deduplicación de candidatos
     3. Filtro de términos ya conocidos
-    4. Clasificación con Groq (máx 25 por corrida)
-    5. Retorna resumen de resultados
+    4. Guardar en CandidateSighting
+    5. Clasificación batch con Groq (Top 25 maduros)
     """
     results = {
         "articles_scanned": 0,
         "candidates_found": 0,
-        "terms_approved": 0,
+        "terms_staged": 0,
         "terms_rejected": 0,
         "errors": [],
     }
@@ -214,7 +420,31 @@ def run_scraper(db: Session) -> dict:
         except Exception as e:
             results["errors"].append(f"Borderland Beat: {str(e)}")
 
-    # Deduplicar
+        # YouTube
+        try:
+            yt_terms = _scrape_youtube(client)
+            all_candidates.extend(yt_terms)
+            results["articles_scanned"] += 2
+        except Exception as e:
+            results["errors"].append(f"YouTube: {str(e)}")
+
+        # Corridos (Genius)
+        try:
+            lyrics_terms = _scrape_lyrics(client)
+            all_candidates.extend(lyrics_terms)
+            results["articles_scanned"] += 3
+        except Exception as e:
+            results["errors"].append(f"Lyrics: {str(e)}")
+
+        # RSS
+        try:
+            rss_terms = _scrape_news_rss(client)
+            all_candidates.extend(rss_terms)
+            results["articles_scanned"] += 4
+        except Exception as e:
+            results["errors"].append(f"RSS: {str(e)}")
+
+    # Deduplicar para esta corrida
     seen = set()
     unique_candidates = []
     for c in all_candidates:
@@ -225,19 +455,29 @@ def run_scraper(db: Session) -> dict:
 
     results["candidates_found"] = len(unique_candidates)
 
-    # Clasificar con Groq (máximo 25 por corrida para no agotar rate limits)
-    for candidate in unique_candidates[:25]:
+    # Guardar sightings en BD
+    for c in unique_candidates:
+        sighting = CandidateSighting(
+            id=str(uuid.uuid4()),
+            term=c["term"].lower().strip(),
+            source=c["source"],
+            context=c.get("context", ""),
+            seen_at=int(datetime.now().timestamp())
+        )
+        db.add(sighting)
+    db.commit()
+
+    # Obtener el Top 25 maduro y puntuarlo, luego clasificar con Groq
+    batch_candidates = get_mature_candidates(db, limit=25)
+    if batch_candidates:
         try:
-            result = classify_and_approve_term(
-                db=db,
-                term=candidate["term"],
-                source=candidate["source"],
-            )
-            if result.get("approved"):
-                results["terms_approved"] += 1
-            else:
-                results["terms_rejected"] += 1
+            batch_results = classify_terms_batch(db, batch_candidates)
+            for res in batch_results:
+                if res.get("staged"):
+                    results["terms_staged"] += 1
+                else:
+                    results["terms_rejected"] += 1
         except Exception as e:
-            results["errors"].append(f"classify '{candidate['term']}': {str(e)}")
+            results["errors"].append(f"Batch classification error: {str(e)}")
 
     return results

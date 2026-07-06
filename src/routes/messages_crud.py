@@ -9,6 +9,7 @@ from src.controllers.messages_crud_controller import (
     handle_update,
     handle_delete,
 )
+from src.routes.scraper import purge_expired
 
 router = APIRouter()
 
@@ -23,6 +24,15 @@ def message_to_dict(m) -> dict:
         "content": m.content,
         "timestamp": m.timestamp,
     }
+
+@router.post("/purge")
+def force_purge(db: Session = Depends(get_db)):
+    deleted = purge_expired(db, days=7)
+    return JSONResponse(status_code=200, content={
+        "success": True,
+        "status_code": 200,
+        "data": f"Purgado manual completado. Mensajes eliminados: {deleted}"
+    })
 
 @router.get("")
 def get_all_messages(db: Session = Depends(get_db)):
