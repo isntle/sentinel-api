@@ -77,6 +77,8 @@ class EscalationRequest(BaseModel):
     velocityWindow: int = Field(..., ge=0)
     messagesAnalyzed: int = Field(..., ge=0)
     uniqueCategories: List[str] = Field(default_factory=list)
+    # Banda de edad del usuario protegido (opcional; el SDK la envía si la tiene).
+    ageBand: Optional[str] = None
     messages: List[Message] = Field(..., min_length=1, description="Debe tener al menos un mensaje")
 
 class IncomingMessage(BaseModel):
