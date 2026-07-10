@@ -115,3 +115,20 @@ class ScraperRun(Base):
     status = Column(String, nullable=False) # 'running', 'success', 'failed'
     results = Column(String, nullable=True) # JSON string
     error = Column(String, nullable=True)
+
+class ActorSighting(Base):
+    """
+    Registro cross-sesión para detectar reclutamiento organizado (un actor → N
+    víctimas). PRIVACIDAD POR DISEÑO: nunca se guarda contenido de mensajes ni
+    identificadores en claro. Solo hashes (user_id y session con sal del
+    servidor) y agregados. Sujeto a purga por retención como los mensajes.
+    """
+    __tablename__ = "actor_sightings"
+
+    id = Column(String, primary_key=True)
+    actor_hash = Column(String, nullable=False, index=True)   # SHA-256(salt + aggressor user_id)
+    session_hash = Column(String, nullable=False)              # SHA-256(salt + session_id)
+    script_fp = Column(String, nullable=True, index=True)      # huella del guion (n-gramas hasheados)
+    risk = Column(String, nullable=True)                       # veredicto de la sesión
+    categories = Column(String, nullable=True)                 # categorías (CSV), sin contenido
+    created_at = Column(Integer, nullable=False, index=True)

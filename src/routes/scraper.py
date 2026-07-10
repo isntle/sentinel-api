@@ -14,6 +14,9 @@ def purge_expired(db: Session, days: int = 7):
     cutoff = int(time.time()) - (days * 24 * 60 * 60)
     deleted = db.query(Message).filter(Message.timestamp < cutoff).delete(synchronize_session=False)
     db.commit()
+    # También purga los avistamientos de red vencidos (retención 30 días).
+    from src.services.network_service import purge_expired_sightings
+    purge_expired_sightings(db)
     return deleted
 
 @router.post("")

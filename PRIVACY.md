@@ -16,6 +16,14 @@ Cuando el motor local detecta un patrón de riesgo sospechoso (Medium, High, Cri
 ## 3. Retención Temporal
 Todo dato escalado a la API tiene una fecha de caducidad inamovible de **7 días**. Una vez cumplido el plazo, el texto de las conversaciones se destruye permanentemente.
 
+## 3b. Señales de Red (Detección de Reclutamiento Organizado)
+Para detectar a un mismo actor que contacta a múltiples menores con el mismo guion (patrón de reclutamiento organizado que ninguna sesión aislada revela), la API mantiene "avistamientos de actor" cruzando sesiones. **Privacidad por diseño:**
+- **Nunca** se almacena contenido de mensajes ni identificadores en claro.
+- Los identificadores de usuario y sesión se guardan solo como hash SHA-256 con una sal secreta del servidor (irreversible).
+- El "guion" se guarda como una huella hasheada de su apertura, no como texto.
+- Estos avistamientos se purgan automáticamente a los **30 días** (minimización de datos).
+- La vista administrativa expone solo agregados hasheados, nunca identidades.
+
 ## 4. No Monetización de Datos
 No vendemos, rentamos, ni compartimos el contenido de las conversaciones con terceros publicitarios. Tampoco utilizamos conversaciones de tus usuarios para entrenar modelos fundacionales públicos.
 

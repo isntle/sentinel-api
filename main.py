@@ -24,6 +24,7 @@ from src.routes.hot_terms import router as hot_terms_router
 from src.routes.scraper import router as scraper_router
 from src.routes.admin import router as admin_router
 from src.routes.feedback import router as feedback_router
+from src.routes.network import router as network_router
 
 db_models.Base.metadata.create_all(bind=engine)
 
@@ -107,6 +108,7 @@ app.include_router(feedback_router, prefix="/api/v1/feedback", dependencies=[Dep
 app.include_router(messages_crud_router, prefix="/api/v1/admin/messages", dependencies=[Depends(require_admin_key)])
 app.include_router(scraper_router, prefix="/api/v1/admin/scrape", dependencies=[Depends(require_admin_key)])
 app.include_router(admin_router, prefix="/admin", dependencies=[Depends(require_admin_key)])
+app.include_router(network_router, prefix="/api/v1/network")
 
 # hot_terms has both GET (client) and POST (admin) so it needs granular protection in the router itself
 app.include_router(hot_terms_router, prefix="/api/v1/hot-terms")

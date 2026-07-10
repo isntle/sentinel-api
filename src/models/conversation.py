@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import List
+from typing import List, Optional
 
 class Message(BaseModel):
     id: str = Field(..., min_length=1, description="UUID del mensaje")
@@ -37,10 +37,35 @@ class V4Layer(BaseModel):
     explicitSignals: List[str] = Field(default_factory=list)
 
 
+class StageFirstSeen(BaseModel):
+    stage: str
+    firstSeenAt: int
+
+
+class TemporalLayer(BaseModel):
+    """Progresión temporal detectada por el SDK (captación lenta multi-día)."""
+    stagesPresent: List[str] = Field(default_factory=list)
+    orderedProgression: bool = False
+    spanDays: float = 0
+    triggeredRules: List[str] = Field(default_factory=list)
+    timeline: List[StageFirstSeen] = Field(default_factory=list)
+
+
+class ActorLayer(BaseModel):
+    """Asimetría de emisor detectada por el SDK: quién concentra las tácticas."""
+    analyzed: bool = False
+    aggressorSender: Optional[str] = None
+    concentration: float = 0
+    triggeredRules: List[str] = Field(default_factory=list)
+
+
 class Layers(BaseModel):
     normalizer: NormalizerLayer
     v3: V3Layer
     v4: V4Layer
+    # Opcionales para compatibilidad con SDKs anteriores que no las envían
+    temporal: Optional[TemporalLayer] = None
+    actor: Optional[ActorLayer] = None
 
 
 class EscalationRequest(BaseModel):
