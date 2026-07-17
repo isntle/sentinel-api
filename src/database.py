@@ -1,7 +1,6 @@
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # En Railway/producción, DATABASE_URL apunta al Postgres persistente (requirements.txt
 # ya trae psycopg2-binary para esto). Si no está definida (dev local), cae a SQLite.

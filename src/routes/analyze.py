@@ -4,12 +4,20 @@ from sqlalchemy.orm import Session
 from src.database import get_db
 from src.models.conversation import EscalationRequest
 from src.controllers.analysis_controller import handle_escalation
+from src.core.security import require_client_key
+from src.models.db_models import ApiKey
+from src.services.evidence_service import record_eligible_analysis
 
 router = APIRouter()
 
 @router.post("/analyze")
-def analyze(escalation: EscalationRequest, db: Session = Depends(get_db)):
+def analyze(
+    escalation: EscalationRequest,
+    db: Session = Depends(get_db),
+    api_key: ApiKey = Depends(require_client_key),
+):
     result = handle_escalation(escalation, db=db)
+    record_eligible_analysis(db, escalation, result, api_key.key_hash)
     return JSONResponse(
         status_code=200,
         content={

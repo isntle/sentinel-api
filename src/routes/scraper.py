@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from src.database import get_db
 from src.services.scraper_service import run_scraper
-from src.models.db_models import ScraperRun, Message
+from src.models.db_models import AnalysisRecord, ScraperRun, Message
 import time
 import uuid
 import json
@@ -13,6 +13,13 @@ router = APIRouter()
 def purge_expired(db: Session, days: int = 7):
     cutoff = int(time.time()) - (days * 24 * 60 * 60)
     deleted = db.query(Message).filter(Message.timestamp < cutoff).delete(synchronize_session=False)
+    # Los snapshots temporales del análisis siguen la misma retención. Los
+    # EvidencePackage creados explícitamente son legal holds independientes y
+    # jamás se incluyen en este job.
+    now = int(time.time())
+    db.query(AnalysisRecord).filter(AnalysisRecord.purge_at < now).delete(
+        synchronize_session=False
+    )
     db.commit()
     # También purga los avistamientos de red vencidos (retención 30 días).
     from src.services.network_service import purge_expired_sightings

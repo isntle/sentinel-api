@@ -25,6 +25,7 @@ from src.routes.scraper import router as scraper_router
 from src.routes.admin import router as admin_router
 from src.routes.feedback import router as feedback_router
 from src.routes.network import router as network_router
+from src.routes.evidence import router as evidence_router
 
 db_models.Base.metadata.create_all(bind=engine)
 
@@ -104,6 +105,7 @@ async def generic_error_handler(request: Request, exc: Exception):
 app.include_router(analyze_router, prefix="/api/v1", dependencies=[Depends(require_client_key)])
 app.include_router(messages_router, prefix="/api/v1/messages", dependencies=[Depends(require_client_key)])
 app.include_router(feedback_router, prefix="/api/v1/feedback", dependencies=[Depends(require_client_key)])
+app.include_router(evidence_router, prefix="/api/v1/evidence")
 # Admin routes (require admin key)
 app.include_router(messages_crud_router, prefix="/api/v1/admin/messages", dependencies=[Depends(require_admin_key)])
 app.include_router(scraper_router, prefix="/api/v1/admin/scrape", dependencies=[Depends(require_admin_key)])

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, Boolean, ForeignKey, Table
+from sqlalchemy import Column, String, Integer, Float, Boolean, ForeignKey, Table, Text
 from sqlalchemy.orm import relationship
 from src.database import Base
 
@@ -131,4 +131,34 @@ class ActorSighting(Base):
     script_fp = Column(String, nullable=True, index=True)      # huella del guion (n-gramas hasheados)
     risk = Column(String, nullable=True)                       # veredicto de la sesión
     categories = Column(String, nullable=True)                 # categorías (CSV), sin contenido
+    created_at = Column(Integer, nullable=False, index=True)
+
+
+class AnalysisRecord(Base):
+    """Snapshot temporal de una escalación, sujeto a la retención de 7 días."""
+    __tablename__ = "analysis_records"
+
+    id = Column(String, primary_key=True)
+    session_id = Column(String, nullable=False, index=True)
+    api_key_hash = Column(String, nullable=False, index=True)
+    risk = Column(String, nullable=False, index=True)
+    analysis_payload = Column(Text, nullable=False)
+    llm_verdict = Column(Text, nullable=False)
+    dataset_versions = Column(Text, nullable=False)
+    created_at = Column(Integer, nullable=False, index=True)
+    purge_at = Column(Integer, nullable=False, index=True)
+
+
+class EvidencePackage(Base):
+    """Instantánea inmutable creada por legal hold; no participa en la purga normal."""
+    __tablename__ = "evidence_packages"
+
+    id = Column(String, primary_key=True)
+    # Sin FK deliberadamente: purgar AnalysisRecord no debe borrar ni bloquear
+    # una evidencia que el cliente solicitó conservar.
+    analysis_record_id = Column(String, nullable=False, unique=True, index=True)
+    session_id = Column(String, nullable=False, index=True)
+    api_key_hash = Column(String, nullable=False, index=True)
+    canonical_payload = Column(Text, nullable=False)
+    content_hash = Column(String, nullable=False)
     created_at = Column(Integer, nullable=False, index=True)

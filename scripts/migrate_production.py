@@ -2,7 +2,8 @@
 Migración de producción para Railway.
 
 Este proyecto no usa Alembic — las tablas nuevas del modelo (DatasetVersion,
-RejectedTerm, CandidateSighting, Feedback, ApiKey, ScraperRun) las crea solo
+RejectedTerm, CandidateSighting, Feedback, ApiKey, ScraperRun, AnalysisRecord,
+EvidencePackage) las crea solo
 `Base.metadata.create_all()` en el arranque de main.py, porque SQLAlchemy sí
 sabe crear tablas que no existen. Lo que NO hace solo es alterar una tabla que
 ya existe en producción para agregarle una columna nueva — por eso hot_terms

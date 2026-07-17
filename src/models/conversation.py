@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import List, Optional
+from typing import Dict, List, Literal, Optional
 
 class Message(BaseModel):
     id: str = Field(..., min_length=1, description="UUID del mensaje")
@@ -7,6 +7,7 @@ class Message(BaseModel):
     session_id: str = Field(..., min_length=1, description="UUID de la sesión")
     content: str = Field(..., min_length=1, max_length=5000, description="Texto del mensaje")
     timestamp: int = Field(..., gt=0, description="Unix timestamp en segundos")
+    source: Optional[Literal["text", "voice_transcript"]] = None
 
     @field_validator("id", "user_id", "session_id")
     @classmethod
@@ -25,6 +26,8 @@ class NormalizerLayer(BaseModel):
 
 class V3Layer(BaseModel):
     score: int = Field(..., ge=0, le=100)
+    originalScore: Optional[int] = Field(default=None, ge=0, le=100)
+    dampenersApplied: List[str] = Field(default_factory=list)
     terms: List[str] = Field(default_factory=list)
     categories: List[str] = Field(default_factory=list)
     triggeredRules: List[str] = Field(default_factory=list)
@@ -54,9 +57,17 @@ class TemporalLayer(BaseModel):
 class ActorLayer(BaseModel):
     """Asimetría de emisor detectada por el SDK: quién concentra las tácticas."""
     analyzed: bool = False
+    profiles: List["ActorProfile"] = Field(default_factory=list)
     aggressorSender: Optional[str] = None
     concentration: float = 0
     triggeredRules: List[str] = Field(default_factory=list)
+
+
+class ActorProfile(BaseModel):
+    sender: str
+    categories: List[str] = Field(default_factory=list)
+    directedActionCount: int = Field(default=0, ge=0)
+    score: int = Field(default=0, ge=0)
 
 
 class Layers(BaseModel):
@@ -79,7 +90,18 @@ class EscalationRequest(BaseModel):
     uniqueCategories: List[str] = Field(default_factory=list)
     # Banda de edad del usuario protegido (opcional; el SDK la envía si la tiene).
     ageBand: Optional[str] = None
+    escalationReason: Optional[Literal[
+        "none_low_risk", "confident_local_proof", "uncertain_needs_llm"
+    ]] = None
+    # Versiones que el SDK declara haber usado. No se infieren: para evidencia
+    # legal es preferible `None` a afirmar una versión incorrecta.
+    datasetVersions: Optional["DatasetVersions"] = None
     messages: List[Message] = Field(..., min_length=1, description="Debe tener al menos un mensaje")
+
+
+class DatasetVersions(BaseModel):
+    regionPacks: Dict[str, str] = Field(default_factory=dict)
+    apiHotTerms: Optional[int] = None
 
 class IncomingMessage(BaseModel):
     user_id: str = Field(..., min_length=1, description="UUID del usuario")

@@ -90,6 +90,7 @@ pip install -r requirements.txt
 # 4. Configurar variables de entorno
 # Crear un archivo .env en la raíz del proyecto con:
 # GROQ_API_KEY=tu_api_key_aqui
+# OPENROUTER_API_KEY=tu_api_key_de_respaldo_opcional
 
 # 5. Levantar el servidor
 uvicorn main:app --reload
@@ -102,6 +103,8 @@ El servidor queda disponible en `http://localhost:8000`.
 | Variable | Descripción |
 |---|---|
 | `GROQ_API_KEY` | API key de Groq Cloud |
+| `OPENROUTER_API_KEY` | Opcional. Activa OpenRouter como respaldo cuando Groq falla |
+| `OPENROUTER_MODEL` | Opcional. Default: `meta-llama/llama-3.3-70b-instruct:free` |
 
 ---
 

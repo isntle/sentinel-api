@@ -11,6 +11,7 @@ from src.services.hot_terms_service import (
     rollback_to_version
 )
 from src.core.security import require_client_key, require_admin_key
+from src.models.db_models import DatasetVersion
 
 router = APIRouter()
 
@@ -21,9 +22,11 @@ def get_hot_terms(db: Session = Depends(get_db)):
     El SDK llama este endpoint al inicializar para extender su dataset local.
     """
     terms = get_approved_terms(db)
+    latest_version = db.query(DatasetVersion).order_by(DatasetVersion.version.desc()).first()
     return JSONResponse(status_code=200, content={
         "success": True,
         "status_code": 200,
+        "dataset_version": latest_version.version if latest_version else None,
         "data": [
             {
                 "id": t.id,
