@@ -20,8 +20,12 @@ class NetworkReportRequest(BaseModel):
     categories: List[str] = Field(default_factory=list)
 
 
-@router.post("/report", dependencies=[Depends(require_client_key)])
-def report_actor(body: NetworkReportRequest, db: Session = Depends(get_db)):
+@router.post("/report")
+def report_actor(
+    body: NetworkReportRequest,
+    db: Session = Depends(get_db),
+    api_key: ApiKey = Depends(require_client_key),
+):
     """
     Registro BARATO de un avistamiento de actor, SIN invocar el LLM. Lo llama el
     SDK cuando resolvió el veredicto localmente pero identificó un agresor, para
@@ -35,6 +39,7 @@ def report_actor(body: NetworkReportRequest, db: Session = Depends(get_db)):
         aggressor_texts=body.aggressor_texts,
         risk=body.risk or "",
         categories=body.categories,
+        api_key_hash=api_key.key_hash,
     )
     return JSONResponse(status_code=200, content={
         "success": True,

@@ -4,7 +4,10 @@ import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pytest
-from src.database import SessionLocal, Base, engine
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+from src.database import Base
 from src.models.db_models import ActorSighting
 from src.services.network_service import (
     record_and_score,
@@ -17,15 +20,20 @@ from src.services.network_service import (
 
 @pytest.fixture
 def db():
-    Base.metadata.create_all(bind=engine)
-    session = SessionLocal()
-    # Limpiar avistamientos de corridas previas para aislar el test.
-    session.query(ActorSighting).delete()
-    session.commit()
-    yield session
-    session.query(ActorSighting).delete()
-    session.commit()
-    session.close()
+    test_engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    Base.metadata.create_all(bind=test_engine)
+    TestingSession = sessionmaker(bind=test_engine)
+    session = TestingSession()
+    try:
+        yield session
+    finally:
+        session.close()
+        Base.metadata.drop_all(bind=test_engine)
+        test_engine.dispose()
 
 
 GUION = ["oye te vi por aqui, tengo un jale para ti, se gana bien, manda tu ubicacion"]

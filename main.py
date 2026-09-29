@@ -11,9 +11,12 @@ from src.database import engine, get_db
 from sqlalchemy.orm import Session
 from src.models import db_models
 from src.core.security import require_client_key, require_admin_key
+from src.core.cors import configure_cors
+from src.config.settings import CORS_ALLOWED_ORIGINS
 import time
 import logging
 import math
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("sentinel_api")
@@ -26,6 +29,11 @@ from src.routes.admin import router as admin_router
 from src.routes.feedback import router as feedback_router
 from src.routes.network import router as network_router
 from src.routes.evidence import router as evidence_router
+from src.routes.telemetry import router as telemetry_router
+from src.routes.value_report import router as value_report_router
+from src.routes.shadow_models import router as shadow_models_router
+from src.routes.active_learning import router as active_learning_router
+from src.routes.drift import router as drift_router
 
 db_models.Base.metadata.create_all(bind=engine)
 
@@ -49,6 +57,8 @@ async def add_process_time_header(request: Request, call_next):
     logger.info(f"{request.method} {request.url.path} - {response.status_code} - {process_time:.4f}s")
     response.headers["X-Process-Time"] = str(process_time)
     return response
+
+configure_cors(app, CORS_ALLOWED_ORIGINS)
 
 TRANSLATIONS = {
     "Field required": "es obligatorio",
@@ -104,8 +114,13 @@ async def generic_error_handler(request: Request, exc: Exception):
 # To keep it simple as requested by the plan, we will add the dependencies to the routers.
 app.include_router(analyze_router, prefix="/api/v1", dependencies=[Depends(require_client_key)])
 app.include_router(messages_router, prefix="/api/v1/messages", dependencies=[Depends(require_client_key)])
-app.include_router(feedback_router, prefix="/api/v1/feedback", dependencies=[Depends(require_client_key)])
+app.include_router(feedback_router, prefix="/api/v1/feedback")
 app.include_router(evidence_router, prefix="/api/v1/evidence")
+app.include_router(telemetry_router, prefix="/api/v1/telemetry")
+app.include_router(value_report_router, prefix="/api/v1/value-report")
+app.include_router(shadow_models_router, prefix="/api/v1/models/shadow")
+app.include_router(active_learning_router, prefix="/api/v1/active-learning")
+app.include_router(drift_router, prefix="/api")
 # Admin routes (require admin key)
 app.include_router(messages_crud_router, prefix="/api/v1/admin/messages", dependencies=[Depends(require_admin_key)])
 app.include_router(scraper_router, prefix="/api/v1/admin/scrape", dependencies=[Depends(require_admin_key)])
@@ -115,12 +130,18 @@ app.include_router(network_router, prefix="/api/v1/network")
 # hot_terms has both GET (client) and POST (admin) so it needs granular protection in the router itself
 app.include_router(hot_terms_router, prefix="/api/v1/hot-terms")
 
-# Static files for the Playground
-app.mount("/public", StaticFiles(directory="public"), name="public")
+# Static files for the legacy API-hosted playground. Resolve from this file so
+# importing the app from another working directory does not fail.
+PUBLIC_DIR = Path(__file__).resolve().parent / "public"
+app.mount("/public", StaticFiles(directory=PUBLIC_DIR), name="public")
 
 @app.get("/playground", include_in_schema=False)
 async def serve_playground():
-    return FileResponse("public/playground.html")
+    return FileResponse(PUBLIC_DIR / "playground.html")
+
+@app.get("/moderation", include_in_schema=False)
+async def serve_moderation():
+    return FileResponse(PUBLIC_DIR / "moderation.html")
 
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):

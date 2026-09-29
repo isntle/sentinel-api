@@ -3,7 +3,7 @@ import os
 import re
 from datetime import datetime
 from sqlalchemy.orm import Session
-from src.models.db_models import CandidateSighting, HotTerm
+from src.models.db_models import CandidateSighting, HotTerm, RejectedTerm, ScraperRun
 
 # Cargar stopwords
 STOPWORDS_FILE = os.path.join(os.path.dirname(__file__), "..", "config", "stopwords_es.json")
@@ -26,7 +26,7 @@ def is_hard_filtered(term: str) -> bool:
     term_lower = term.lower()
     
     # 1. Es un número o URL
-    if term.isnumeric() or "http" in term_lower or "www" in term_lower:
+    if any(character.isdigit() for character in term) or re.search(r"(?:https?://|www\.|\.[a-z]{2,}/)", term_lower):
         return True
     
     # 2. Es una palabra muy común del español
@@ -57,13 +57,23 @@ def calculate_score(term: str, sightings: list[CandidateSighting], db: Session) 
                 
     return score
 
+from src.services.data_provenance_service import resolve_canonical_origin, calculate_content_hash
+
 def get_mature_candidates(db: Session, limit: int = 25) -> list[dict]:
     """
     Obtiene los candidatos que ya están listos para ser enviados a Groq.
-    Regla de maduración: >= 2 fuentes distintas, o >= 3 apariciones totales.
+    Regla de maduración canónica (S08):
+    - >=2 apariciones
+    - provenientes de >=2 orígenes canónicos distintos (ej. no 2 URLs del mismo sitio)
+    - y con >=2 hashes de contenido distintos (evita copias idénticas sindicadas).
     Retorna el top N por score.
     """
     sightings = db.query(CandidateSighting).all()
+    known_terms = {
+        term for (term,) in db.query(HotTerm.term).all()
+    } | {
+        term for (term,) in db.query(RejectedTerm.term).all()
+    }
     grouped = {}
     for s in sightings:
         term = s.term.lower().strip()
@@ -74,17 +84,24 @@ def get_mature_candidates(db: Session, limit: int = 25) -> list[dict]:
     mature_candidates = []
     
     for term, term_sightings in grouped.items():
-        if is_hard_filtered(term):
+        if is_hard_filtered(term) or term in known_terms:
             continue
             
-        sources = {s.source for s in term_sightings}
+        canonical_origins = {
+            s.canonical_origin or resolve_canonical_origin(s.source)
+            for s in term_sightings
+        }
+        content_hashes = {
+            s.content_hash or calculate_content_hash(s.context)
+            for s in term_sightings
+        }
         
-        # Regla de maduración
-        if len(sources) >= 2 or len(term_sightings) >= 3:
+        # Regla de maduración con deduplicación por origen y contenido
+        if len(term_sightings) >= 2 and len(canonical_origins) >= 2 and len(content_hashes) >= 2:
             score = calculate_score(term, term_sightings, db)
             
             best_context = max(term_sightings, key=lambda s: len(s.context or "")).context
-            best_source = list(sources)[0]
+            best_source = list(canonical_origins)[0]
             
             mature_candidates.append({
                 "term": term,
@@ -111,19 +128,55 @@ def get_pipeline_stats(db: Session) -> dict:
         grouped[term].append(s)
         
     eligible = 0
+    known_terms = {
+        term for (term,) in db.query(HotTerm.term).all()
+    } | {
+        term for (term,) in db.query(RejectedTerm.term).all()
+    }
     for term, term_sightings in grouped.items():
-        if not is_hard_filtered(term):
-            sources = {s.source for s in term_sightings}
-            if len(sources) >= 2 or len(term_sightings) >= 3:
+        if not is_hard_filtered(term) and term not in known_terms:
+            canonical_origins = {
+                s.canonical_origin or resolve_canonical_origin(s.source)
+                for s in term_sightings
+            }
+            content_hashes = {
+                s.content_hash or calculate_content_hash(s.context)
+                for s in term_sightings
+            }
+            if len(term_sightings) >= 2 and len(canonical_origins) >= 2 and len(content_hashes) >= 2:
                 eligible += 1
                 
     approved = db.query(HotTerm).filter(HotTerm.approved == True).count()
     rejected = db.query(RejectedTerm).count()
+    staged = db.query(HotTerm).filter(HotTerm.staged == True).count()
+    classified = db.query(HotTerm).count() + rejected
     
+    latest_run = (
+        db.query(ScraperRun)
+        .filter(ScraperRun.status == "success")
+        .order_by(ScraperRun.finished_at.desc(), ScraperRun.started_at.desc())
+        .first()
+    )
+    latest_results = {}
+    if latest_run and latest_run.results:
+        try:
+            latest_results = json.loads(latest_run.results)
+        except (TypeError, json.JSONDecodeError):
+            latest_results = {}
+
     return {
         "sightings_totales": total_sightings,
         "candidatos_unicos": len(grouped),
         "candidatos_elegibles": eligible,
+        "candidatos_clasificados": classified,
+        "terminos_staged": staged,
         "terminos_aprobados": approved,
-        "terminos_rechazados": rejected
+        "terminos_rechazados": rejected,
+        "ultima_corrida": {
+            "candidatos_entraron": latest_results.get("candidates_found", 0),
+            "candidatos_sobrevivieron_prefiltro": latest_results.get("candidates_prefiltered", 0),
+            "candidatos_clasificados": latest_results.get("candidates_classified", 0),
+            "candidatos_aprobados_ia": latest_results.get("terms_staged", 0),
+            "candidatos_omitidos_por_llm": latest_results.get("terms_omitted", 0),
+        },
     }

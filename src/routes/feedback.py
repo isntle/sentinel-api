@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Optional, Dict, Any, List
@@ -9,8 +9,10 @@ import json
 import time
 
 from src.database import get_db
-from src.models.db_models import Feedback
-from src.core.security import require_admin_key
+from src.models.db_models import ApiKey, Feedback
+from src.core.security import require_admin_key, require_client_key
+import hashlib
+import re
 
 router = APIRouter()
 
@@ -20,15 +22,58 @@ class FeedbackRequest(BaseModel):
     feedback: str = Field(..., description="'false_positive' | 'false_negative' | 'confirmed'")
     comment: Optional[str] = None
     reported_by: str
+    term_ids: List[str] = Field(default_factory=list, max_length=100)
+    dataset_version: Optional[int] = Field(default=None, ge=1)
+
+    @field_validator("term_ids")
+    @classmethod
+    def validate_term_ids(cls, values: List[str]) -> List[str]:
+        editorial = re.compile(r"^[A-Z0-9]+(?:-[A-Z0-9]+)*$")
+        uuid_pattern = re.compile(
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        )
+        normalized = list(dict.fromkeys(value.strip() for value in values))
+        if any(
+            len(value) > 80
+            or not (editorial.fullmatch(value) or uuid_pattern.fullmatch(value))
+            for value in normalized
+        ):
+            raise ValueError("term_ids must contain dataset IDs, never message text")
+        return normalized
 
 @router.post("")
-def report_feedback(body: FeedbackRequest, db: Session = Depends(get_db)):
+def report_feedback(
+    body: FeedbackRequest,
+    db: Session = Depends(get_db),
+    api_key: ApiKey = Depends(require_client_key),
+):
     """
     Recibe el reporte de feedback de la plataforma cliente.
     """
     if body.feedback not in ['false_positive', 'false_negative', 'confirmed']:
         raise HTTPException(status_code=400, detail="Invalid feedback type")
         
+    fingerprint_source = json.dumps(
+        {
+            "api_key_hash": api_key.key_hash,
+            "session_id": body.session_id,
+            "feedback": body.feedback,
+            "term_ids": sorted(body.term_ids),
+            "dataset_version": body.dataset_version,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    fingerprint = hashlib.sha256(fingerprint_source.encode()).hexdigest()
+    existing = db.query(Feedback).filter(Feedback.feedback_fingerprint == fingerprint).first()
+    if existing:
+        return JSONResponse(status_code=200, content={
+            "success": True,
+            "status_code": 200,
+            "message": "Feedback already registered",
+            "data": {"id": existing.id, "deduplicated": True},
+        })
+
     f = Feedback(
         id=str(uuid.uuid4()),
         session_id=body.session_id,
@@ -36,7 +81,11 @@ def report_feedback(body: FeedbackRequest, db: Session = Depends(get_db)):
         feedback_type=body.feedback,
         comment=body.comment,
         reported_by=body.reported_by,
-        created_at=int(time.time())
+        created_at=int(time.time()),
+        api_key_hash=api_key.key_hash,
+        dataset_version=body.dataset_version,
+        term_ids=json.dumps(body.term_ids, separators=(",", ":")),
+        feedback_fingerprint=fingerprint,
     )
     db.add(f)
     db.commit()
@@ -44,7 +93,8 @@ def report_feedback(body: FeedbackRequest, db: Session = Depends(get_db)):
     return JSONResponse(status_code=201, content={
         "success": True,
         "status_code": 201,
-        "message": "Feedback registered successfully"
+        "message": "Feedback registered successfully",
+        "data": {"id": f.id, "deduplicated": False},
     })
 
 @router.get("/stats", dependencies=[Depends(require_admin_key)])
@@ -59,9 +109,12 @@ def get_feedback_stats(db: Session = Depends(get_db)):
     
     for f in all_feedback:
         try:
+            # Filas nuevas guardan IDs validados por separado. El veredicto se
+            # conserva únicamente como fallback para las filas legacy.
+            terms = json.loads(f.term_ids) if f.term_ids else []
             verdict = json.loads(f.verdict_original)
-            # Extraemos terminos si vienen en la raiz, o de layers/v3_matches
-            terms = verdict.get('terms', [])
+            if not terms:
+                terms = verdict.get('terms', [])
             
             # Formato Sentinel SDK: Si los terminos vienen en layers
             if not terms and 'layers' in verdict:

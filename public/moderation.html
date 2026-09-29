@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel - Bandeja de Moderación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0A0A0A; color: #E5E7EB; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+        
+        .badge-disagreement { background-color: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-uncertainty { background-color: rgba(234, 179, 8, 0.15); color: #FDE047; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .badge-random { background-color: rgba(59, 130, 246, 0.15); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-feedback { background-color: rgba(168, 85, 247, 0.15); color: #D8B4FE; border: 1px solid rgba(168, 85, 247, 0.3); }
+        
+        .bubble-contact { background-color: #1F2937; border-left: 3px solid #60A5FA; }
+        .bubble-user { background-color: #111827; border-left: 3px solid #9CA3AF; }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+    <!-- Header / Navbar -->
+    <header class="border-b border-gray-800 bg-[#111827] px-6 py-3.5 flex items-center justify-between z-10">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-md">S</div>
+            <div>
+                <h1 class="text-base font-bold text-white tracking-tight flex items-center gap-2">
+                    Sentinel <span class="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded font-normal">Bandeja de Moderación</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Mode Switcher -->
+            <div class="flex items-center bg-gray-900 border border-gray-700 rounded-lg p-0.5 text-xs" role="radiogroup" aria-label="Modo de operación">
+                <button id="btnModeFixture" onclick="setMode('fixture')" class="px-3 py-1 rounded-md bg-blue-600 text-white font-medium transition-all" aria-checked="true" role="radio">
+                    Modo Fixtures
+                </button>
+                <button id="btnModeApi" onclick="setMode('api')" class="px-3 py-1 rounded-md text-gray-400 hover:text-white transition-all" aria-checked="false" role="radio">
+                    Modo API
+                </button>
+            </div>
+
+            <!-- API Key Input (Hidden in Fixture mode) -->
+            <div id="apiKeyContainer" class="hidden flex items-center gap-2">
+                <label for="adminKeyInput" class="sr-only">Clave Admin</label>
+                <input type="password" id="adminKeyInput" placeholder="Admin Key..." class="bg-gray-900 border border-gray-700 rounded-md px-3 py-1 text-xs w-44 focus:outline-none focus:border-blue-500 text-white" aria-label="Clave de administrador">
+                <button onclick="fetchQueueFromApi()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-200 px-2.5 py-1 rounded border border-gray-600">Conectar</button>
+            </div>
+
+            <a href="/playground" class="text-xs text-gray-400 hover:text-gray-200 transition-colors">Volver al Playground</a>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex overflow-hidden">
+        
+        <!-- Left Panel: Prioritized Queue List -->
+        <aside class="w-96 border-r border-gray-800 flex flex-col bg-[#0D1117]" aria-label="Lista de casos para moderación">
+            <!-- Queue Header & Filters -->
+            <div class="p-4 border-b border-gray-800 bg-gray-900/50 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Casos Pendientes</h2>
+                    <span id="queueCountBadge" class="text-xs bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full font-mono">0 casos</span>
+                </div>
+                <!-- Filter Tabs -->
+                <div class="flex gap-1 overflow-x-auto text-[11px] pb-1" role="tablist" aria-label="Filtros por estrategia">
+                    <button onclick="filterQueue('all')" class="filter-tab px-2.5 py-1 rounded bg-blue-600 text-white font-medium" data-filter="all">Todos</button>
+                    <button onclick="filterQueue('disagreement')" class="filter-tab px-2 py-1 rounded bg-gray-800 text-gray-400 hover:text-gray-200" data-filter="disagreement">Desacuerdos</button>
+                    <button onclick="filterQueue('uncertainty')" class="filter-tab px-2 py-1 rounded bg-gray-800 text-gray-400 hover:text-gray-200" data-filter="uncertainty">Incertidumbre</button>
+                    <button onclick="filterQueue('random_baseline')" class="filter-tab px-2 py-1 rounded bg-gray-800 text-gray-400 hover:text-gray-200" data-filter="random_baseline">Control</button>
+                </div>
+            </div>
+
+            <!-- Queue Items Container -->
+            <div id="queueList" class="flex-1 overflow-y-auto divide-y divide-gray-800/60" role="list">
+                <!-- Injected via JavaScript -->
+            </div>
+        </aside>
+
+        <!-- Right Panel: Case Detail & Human Review Station -->
+        <section class="flex-1 flex flex-col bg-[#0A0A0A] overflow-hidden" aria-label="Detalle del caso">
+            
+            <!-- Empty State View -->
+            <div id="emptyState" class="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                <div class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 mb-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-sm font-semibold text-gray-300">Selecciona un caso de la bandeja</h3>
+                <p class="text-xs text-gray-500 mt-1 max-w-sm">Revisa las alertas con evaluación ciega inicial y registra una resolución no acusatoria.</p>
+            </div>
+
+            <!-- Active Case Content -->
+            <div id="activeCaseView" class="hidden flex-1 flex flex-col overflow-hidden">
+                <!-- Case Header Toolbar -->
+                <div class="px-6 py-3 border-b border-gray-800 bg-[#111827] flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <span id="detailCaseId" class="text-sm font-bold text-white font-mono">EX-001</span>
+                        <span id="detailFamilyBadge" class="text-[11px] bg-gray-800 text-gray-400 px-2 py-0.5 rounded font-mono">fam_halconeo_01</span>
+                        <span id="detailStrategyBadge" class="text-[11px] px-2 py-0.5 rounded font-semibold badge-disagreement">Desacuerdo</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <span id="detailStatusBadge" class="bg-gray-800 px-2.5 py-1 rounded text-gray-300 font-mono">Estado: Pendiente</span>
+                    </div>
+                </div>
+
+                <!-- Split Workspace: Transcript (Left) + Assessment & Review (Right) -->
+                <div class="flex-1 flex overflow-hidden">
+                    
+                    <!-- Transcript Column -->
+                    <div class="flex-1 flex flex-col border-r border-gray-800 overflow-hidden bg-[#0D1117]">
+                        <div class="px-6 py-2.5 border-b border-gray-800 bg-gray-900/60 text-xs font-semibold text-gray-400">
+                            Transcripción de Turnos
+                        </div>
+                        <div id="transcriptContainer" class="flex-1 overflow-y-auto p-6 space-y-3.5">
+                            <!-- Turns injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Assessment & Moderation Action Column -->
+                    <div class="w-[460px] flex flex-col overflow-y-auto p-6 space-y-6 bg-[#0A0A0A]">
+                        
+                        <!-- System Assessment Card -->
+                        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-4">
+                            <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-wider border-b border-gray-800 pb-2">
+                                Evaluación de Señales del Sistema
+                            </h4>
+                            
+                            <div class="grid grid-cols-2 gap-3 text-xs">
+                                <div>
+                                    <span class="text-gray-500 block">Recomendación Sistema:</span>
+                                    <span id="detailSystemRecommendation" class="font-bold text-yellow-400 font-mono">SILENT_OBSERVE</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 block">Acción de Plataforma:</span>
+                                    <span id="detailPlatformAction" class="font-medium text-gray-300 font-mono">OBSERVACION_PASIVA</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 block">Nivel Léxico (Reglas):</span>
+                                    <span id="detailLexicalRisk" class="font-semibold text-white">MEDIUM</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 block">Prob. Sombra Calibrada:</span>
+                                    <span id="detailShadowProb" class="font-mono text-blue-400">0.42 (p=0.42)</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-2 border-t border-gray-800/80 text-xs space-y-1.5">
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Incertidumbre:</span>
+                                    <span id="detailUncertaintyStatus" class="font-mono text-green-400">calibrated (ECE &lt; 0.12)</span>
+                                </div>
+                                <div class="flex justify-between text-gray-400">
+                                    <span>Versión de Packs / Modelo:</span>
+                                    <span id="detailModelVersions" class="font-mono text-gray-400">v3.2.0 / laya-shadow-v1.2</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Human Moderation Form -->
+                        <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 space-y-4">
+                            <h4 class="text-xs font-semibold text-gray-300 uppercase tracking-wider border-b border-gray-800 pb-2">
+                                Dictamen de Moderación Humana
+                            </h4>
+
+                            <!-- Previous Opinion (if 2nd review) -->
+                            <div id="previousReviewBox" class="hidden bg-gray-800/80 border border-gray-700 rounded-lg p-3 text-xs space-y-1">
+                                <span class="text-gray-400 block font-medium">Opinión Previa Registrada:</span>
+                                <div class="flex justify-between items-center text-gray-200">
+                                    <span id="prevReviewerId" class="font-mono">rev_0401</span>
+                                    <span id="prevVerdictBadge" class="px-2 py-0.5 rounded font-bold bg-yellow-900/50 text-yellow-300">RISK</span>
+                                </div>
+                            </div>
+
+                            <!-- Reviewer Pseudonym -->
+                            <div class="space-y-1">
+                                <label for="reviewerInput" class="text-xs font-medium text-gray-400">Identificador Seudónimo del Moderador:</label>
+                                <input type="text" id="reviewerInput" value="rev_0142" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-blue-500">
+                            </div>
+
+                            <!-- Disposition Options -->
+                            <div class="space-y-2">
+                                <span class="text-xs font-medium text-gray-400 block">Veredicto Humano:</span>
+                                <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Veredicto de moderación">
+                                    <button type="button" onclick="selectVerdict('BENIGN')" id="btnVerdictBENIGN" class="verdict-btn py-2 px-2 text-center rounded-lg border border-gray-700 text-xs font-semibold hover:border-green-500 transition-all text-gray-300">
+                                        BENIGN
+                                    </button>
+                                    <button type="button" onclick="selectVerdict('RISK')" id="btnVerdictRISK" class="verdict-btn py-2 px-2 text-center rounded-lg border border-gray-700 text-xs font-semibold hover:border-red-500 transition-all text-gray-300">
+                                        RISK
+                                    </button>
+                                    <button type="button" onclick="selectVerdict('INSUFFICIENT_CONTEXT')" id="btnVerdictUNKNOWN" class="verdict-btn py-2 px-2 text-center rounded-lg border border-gray-700 text-xs font-semibold hover:border-yellow-500 transition-all text-gray-300">
+                                        DESCONOCIDO
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Notes Field -->
+                            <div class="space-y-1">
+                                <label for="rationaleInput" class="text-xs font-medium text-gray-400">Justificación / Notas de Decisión:</label>
+                                <textarea id="rationaleInput" rows="2" placeholder="Describe el patrón observado en lenguaje no acusatorio..." class="w-full bg-gray-800 border border-gray-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-blue-500"></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button onclick="submitCaseReview()" id="btnSubmitReview" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg text-xs shadow-md transition-all">
+                                Guardar Dictamen de Moderación
+                            </button>
+                            
+                            <p id="submissionFeedback" class="text-[11px] text-center text-gray-400" role="status" aria-live="polite"></p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Client-Side State and Fixtures -->
+    <script>
+        // Fixtures de demostración para el modo offline / testing
+        const FIXTURE_QUEUE = [
+            {
+                item_id: "FIX-001",
+                session_id: "sess_halconeo_01",
+                family_id: "fam_halconeo_01",
+                sampling_strategy: "disagreement",
+                inclusion_probability: 0.8,
+                primary_verdict: "HIGH",
+                shadow_probability: 0.22,
+                system_recommendation: "SILENT_OBSERVE",
+                platform_action: "OBSERVACION_PASIVA",
+                status: "pending",
+                first_reviewer_id: null,
+                first_verdict: null,
+                created_at: Math.floor(Date.now() / 1000) - 3600,
+                turns: [
+                    { role: "contact", text: "Qué onda chavo, te vi saliendo de la secundaria." },
+                    { role: "contact", text: "Te pongo 200 de saldo si me tiras un paro desde tu ventana." },
+                    { role: "user", text: "¿Qué tipo de paro o qué?" },
+                    { role: "contact", text: "Nomás mándame un mensaje cada que veas pasar las camionetas de la estatal." }
+                ]
+            },
+            {
+                item_id: "FIX-002",
+                session_id: "sess_gaming_02",
+                family_id: "fam_gaming_01",
+                sampling_strategy: "uncertainty",
+                inclusion_probability: 0.6,
+                primary_verdict: "MEDIUM",
+                shadow_probability: 0.48,
+                system_recommendation: "ALLOW",
+                platform_action: "NINGUNA",
+                status: "reviewed",
+                first_reviewer_id: "rev_0401",
+                first_verdict: "BENIGN",
+                created_at: Math.floor(Date.now() / 1000) - 7200,
+                turns: [
+                    { role: "user", text: "¿A qué hora le damos a las retas de Warzone?" },
+                    { role: "contact", text: "En media hora, primero tengo que hacer la tarea de historia." },
+                    { role: "user", text: "Va, saca las armas chidas para subir de rango." }
+                ]
+            },
+            {
+                item_id: "FIX-003",
+                session_id: "sess_music_03",
+                family_id: "fam_narcocorrido_01",
+                sampling_strategy: "random_baseline",
+                inclusion_probability: 0.1,
+                primary_verdict: "LOW",
+                shadow_probability: 0.05,
+                system_recommendation: "ALLOW",
+                platform_action: "NINGUNA",
+                status: "pending",
+                first_reviewer_id: null,
+                first_verdict: null,
+                created_at: Math.floor(Date.now() / 1000) - 14400,
+                turns: [
+                    { role: "user", text: "¿Ya escuchaste la nueva rola de los Belicones?" },
+                    { role: "contact", text: "Simón, la de los corridos bélicos está bien pegajosa." },
+                    { role: "user", text: "Pásame el link de Spotify." }
+                ]
+            }
+        ];
+
+        let currentMode = "fixture";
+        let queueData = [...FIXTURE_QUEUE];
+        let currentFilter = "all";
+        let activeItem = null;
+        let selectedVerdict = null;
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById("btnModeFixture").className = mode === "fixture" ? "px-3 py-1 rounded-md bg-blue-600 text-white font-medium transition-all" : "px-3 py-1 rounded-md text-gray-400 hover:text-white transition-all";
+            document.getElementById("btnModeApi").className = mode === "api" ? "px-3 py-1 rounded-md bg-blue-600 text-white font-medium transition-all" : "px-3 py-1 rounded-md text-gray-400 hover:text-white transition-all";
+            document.getElementById("apiKeyContainer").className = mode === "api" ? "flex items-center gap-2" : "hidden";
+
+            if (mode === "fixture") {
+                queueData = JSON.parse(JSON.stringify(FIXTURE_QUEUE));
+                renderQueue();
+            } else {
+                fetchQueueFromApi();
+            }
+        }
+
+        function filterQueue(filter) {
+            currentFilter = filter;
+            document.querySelectorAll(".filter-tab").forEach(tab => {
+                tab.className = tab.getAttribute("data-filter") === filter ? "filter-tab px-2.5 py-1 rounded bg-blue-600 text-white font-medium" : "filter-tab px-2 py-1 rounded bg-gray-800 text-gray-400 hover:text-gray-200";
+            });
+            renderQueue();
+        }
+
+        function renderQueue() {
+            const container = document.getElementById("queueList");
+            container.innerHTML = "";
+
+            const filtered = queueData.filter(item => {
+                if (currentFilter === "all") return true;
+                return item.sampling_strategy === currentFilter;
+            });
+
+            document.getElementById("queueCountBadge").textContent = `${filtered.length} casos`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-xs text-gray-500">No hay casos en este filtro.</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const itemDiv = document.createElement("div");
+                const isActive = activeItem && activeItem.item_id === item.item_id;
+                itemDiv.className = `p-4 cursor-pointer transition-colors ${isActive ? 'bg-gray-800/80 border-l-4 border-blue-500' : 'hover:bg-gray-800/40'}`;
+                itemDiv.onclick = () => selectCase(item);
+
+                const strategyBadgeClass = item.sampling_strategy === "disagreement" ? "badge-disagreement" : (item.sampling_strategy === "uncertainty" ? "badge-uncertainty" : "badge-random");
+                const strategyName = item.sampling_strategy === "disagreement" ? "Desacuerdo" : (item.sampling_strategy === "uncertainty" ? "Incertidumbre" : "Control");
+
+                itemDiv.innerHTML = `
+                    <div class="flex justify-between items-start mb-1.5">
+                        <span class="text-xs font-bold text-white font-mono">${item.item_id}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold ${strategyBadgeClass}">${strategyName}</span>
+                    </div>
+                    <div class="text-[11px] text-gray-400 font-mono truncate mb-2">${item.family_id || 'Sin familia'}</div>
+                    <div class="flex justify-between items-center text-[10px] text-gray-500">
+                        <span>Estado: <strong class="text-gray-300 font-normal">${item.status}</strong></span>
+                        <span>pi = ${item.inclusion_probability}</span>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        function selectCase(item) {
+            activeItem = item;
+            renderQueue();
+
+            document.getElementById("emptyState").classList.add("hidden");
+            document.getElementById("activeCaseView").classList.remove("hidden");
+
+            // Header info
+            document.getElementById("detailCaseId").textContent = item.item_id;
+            document.getElementById("detailFamilyBadge").textContent = item.family_id || "fam_general";
+            document.getElementById("detailStrategyBadge").textContent = item.sampling_strategy;
+            document.getElementById("detailStatusBadge").textContent = `Estado: ${item.status}`;
+
+            // Signals
+            document.getElementById("detailSystemRecommendation").textContent = item.system_recommendation || "SILENT_OBSERVE";
+            document.getElementById("detailPlatformAction").textContent = item.platform_action || "OBSERVACION_PASIVA";
+            document.getElementById("detailLexicalRisk").textContent = item.primary_verdict || "MEDIUM";
+            document.getElementById("detailShadowProb").textContent = item.shadow_probability !== undefined ? `${item.shadow_probability} (calibrado)` : "N/A";
+
+            // Previous Review Box
+            const prevBox = document.getElementById("previousReviewBox");
+            if (item.first_reviewer_id) {
+                prevBox.classList.remove("hidden");
+                document.getElementById("prevReviewerId").textContent = item.first_reviewer_id;
+                document.getElementById("prevVerdictBadge").textContent = item.first_verdict;
+            } else {
+                prevBox.classList.add("hidden");
+            }
+
+            // Transcript turns
+            const transcriptContainer = document.getElementById("transcriptContainer");
+            transcriptContainer.innerHTML = "";
+            (item.turns || []).forEach((turn, idx) => {
+                const turnDiv = document.createElement("div");
+                const isUser = turn.role === "user" || turn.role === "target_minor";
+                turnDiv.className = `p-3 rounded-lg text-xs ${isUser ? 'bubble-user' : 'bubble-contact'}`;
+                turnDiv.innerHTML = `
+                    <div class="flex justify-between items-center text-[10px] text-gray-400 mb-1">
+                        <span class="font-semibold">${isUser ? 'Usuario / Menor' : 'Contacto Externo'}</span>
+                        <span class="font-mono">Turno #${idx + 1}</span>
+                    </div>
+                    <p class="text-gray-200 leading-relaxed">${turn.text}</p>
+                `;
+                transcriptContainer.appendChild(turnDiv);
+            });
+
+            // Reset verdict selection
+            selectedVerdict = null;
+            document.querySelectorAll(".verdict-btn").forEach(btn => btn.classList.remove("bg-blue-600", "text-white", "border-blue-500"));
+            document.getElementById("submissionFeedback").textContent = "";
+        }
+
+        function selectVerdict(verdict) {
+            selectedVerdict = verdict;
+            document.querySelectorAll(".verdict-btn").forEach(btn => {
+                btn.classList.remove("bg-blue-600", "text-white", "border-blue-500");
+            });
+            const targetBtn = verdict === "BENIGN" ? "btnVerdictBENIGN" : (verdict === "RISK" ? "btnVerdictRISK" : "btnVerdictUNKNOWN");
+            document.getElementById(targetBtn).classList.add("bg-blue-600", "text-white", "border-blue-500");
+        }
+
+        function submitCaseReview() {
+            if (!activeItem) return;
+            if (!selectedVerdict) {
+                document.getElementById("submissionFeedback").textContent = "Por favor selecciona un veredicto (BENIGN, RISK o DESCONOCIDO).";
+                document.getElementById("submissionFeedback").className = "text-[11px] text-center text-red-400";
+                return;
+            }
+
+            const reviewerId = document.getElementById("reviewerInput").value.trim() || "rev_0142";
+            const rationale = document.getElementById("rationaleInput").value.trim();
+
+            if (currentMode === "fixture") {
+                // Simulación local de revisión
+                if (!activeItem.first_reviewer_id) {
+                    activeItem.first_reviewer_id = reviewerId;
+                    activeItem.first_verdict = selectedVerdict;
+                    activeItem.status = "reviewed";
+                } else if (activeItem.first_reviewer_id !== reviewerId) {
+                    activeItem.status = "adjudicated";
+                    activeItem.adjudicated_verdict = selectedVerdict;
+                }
+                document.getElementById("submissionFeedback").textContent = `Dictamen guardado exitosamente como ${selectedVerdict} por ${reviewerId}.`;
+                document.getElementById("submissionFeedback").className = "text-[11px] text-center text-green-400";
+                renderQueue();
+                selectCase(activeItem);
+            } else {
+                // Enviar a la API
+                const adminKey = document.getElementById("adminKeyInput").value.trim();
+                fetch(`/api/v1/active-learning/review/${activeItem.item_id}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-API-Key": adminKey
+                    },
+                    body: JSON.stringify({
+                        reviewer_id: reviewerId,
+                        verdict: selectedVerdict === "DESCONOCIDO" ? "INSUFFICIENT_CONTEXT" : selectedVerdict
+                    })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.success) {
+                        document.getElementById("submissionFeedback").textContent = "Dictamen registrado en API.";
+                        document.getElementById("submissionFeedback").className = "text-[11px] text-center text-green-400";
+                        fetchQueueFromApi();
+                    } else {
+                        document.getElementById("submissionFeedback").textContent = `Error: ${res.details || 'Fallo de autenticación'}`;
+                        document.getElementById("submissionFeedback").className = "text-[11px] text-center text-red-400";
+                    }
+                })
+                .catch(err => {
+                    document.getElementById("submissionFeedback").textContent = `Error de red: ${err.message}`;
+                    document.getElementById("submissionFeedback").className = "text-[11px] text-center text-red-400";
+                });
+            }
+        }
+
+        function fetchQueueFromApi() {
+            const adminKey = document.getElementById("adminKeyInput").value.trim();
+            fetch("/api/v1/active-learning/queue?blind=false&limit=50", {
+                headers: { "X-API-Key": adminKey }
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success && res.data?.items) {
+                    queueData = res.data.items;
+                    renderQueue();
+                } else {
+                    document.getElementById("queueList").innerHTML = `<div class="p-8 text-center text-xs text-red-400">Error de autorización con la API.</div>`;
+                }
+            })
+            .catch(() => {
+                document.getElementById("queueList").innerHTML = `<div class="p-8 text-center text-xs text-red-400">No se pudo conectar a la API local.</div>`;
+            });
+        }
+
+        // Inicializar
+        renderQueue();
+    </script>
+</body>
+</html>

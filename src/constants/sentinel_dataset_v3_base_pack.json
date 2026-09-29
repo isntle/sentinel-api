@@ -1,0 +1,2604 @@
+{
+  "pack_id": "MX",
+  "version": "3.0.0",
+  "terms": [
+    {
+      "id": "REC-002",
+      "term": "chamba",
+      "variants": [
+        "hay chamba",
+        "la chamba",
+        "una chamba",
+        "chambita",
+        "la chambita",
+        "chambear",
+        "hay chambita"
+      ],
+      "category": "reclutamiento",
+      "weight": 3
+    },
+    {
+      "id": "REC-003",
+      "term": "somos familia",
+      "variants": [
+        "eres familia",
+        "ya eres de los nuestros",
+        "eres uno de nosotros",
+        "acá te tratamos como familia",
+        "te vamos a tratar como familia",
+        "aquí todos somos familia",
+        "eres parte de la familia"
+      ],
+      "category": "reclutamiento",
+      "weight": 8
+    },
+    {
+      "id": "REC-004",
+      "term": "mandado",
+      "variants": [
+        "un mandadito",
+        "el mandado",
+        "hacer un mandado",
+        "solo un mandado",
+        "mandadito rápido",
+        "los mandados",
+        "hacer mandados",
+        "solo es un mandado"
+      ],
+      "category": "reclutamiento",
+      "weight": 5
+    },
+    {
+      "id": "REC-005",
+      "term": "la plaza",
+      "variants": [
+        "nuestra plaza",
+        "esta plaza",
+        "la plazita",
+        "el territorio",
+        "la zona",
+        "nuestra zona",
+        "el área"
+      ],
+      "category": "reclutamiento",
+      "weight": 7
+    },
+    {
+      "id": "REC-006",
+      "term": "el patrón",
+      "variants": [
+        "el patron",
+        "mi patrón",
+        "el jefe",
+        "el señor",
+        "el mero mero",
+        "el grande",
+        "el boss",
+        "el mencho",
+        "el mero",
+        "el señor de los gallos"
+      ],
+      "category": "reclutamiento",
+      "weight": 7
+    },
+    {
+      "id": "REC-008",
+      "term": "te cuido yo",
+      "variants": [
+        "yo te cuido",
+        "aquí te protegemos",
+        "nadie te va a tocar",
+        "estás protegido",
+        "te tenemos cubierto",
+        "con nosotros estás seguro",
+        "bajo nuestra protección",
+        "te respaldamos"
+      ],
+      "category": "reclutamiento",
+      "weight": 8
+    },
+    {
+      "id": "REC-010",
+      "term": "de confianza",
+      "variants": [
+        "eres de confianza",
+        "te tengo confianza",
+        "eres el indicado",
+        "confío en ti para esto",
+        "te lo digo porque confío en ti",
+        "persona de confianza",
+        "gente de confianza"
+      ],
+      "category": "reclutamiento",
+      "weight": 4
+    },
+    {
+      "id": "REC-011",
+      "term": "te necesitamos",
+      "variants": [
+        "te necesito",
+        "necesitamos alguien como tú",
+        "eres el que buscábamos",
+        "estábamos esperando a alguien como tú",
+        "buscamos gente como tú",
+        "eres lo que necesitamos"
+      ],
+      "category": "reclutamiento",
+      "weight": 6
+    },
+    {
+      "id": "REC-013",
+      "term": "solo por esta vez",
+      "variants": [
+        "es una sola vez",
+        "nada más esta vez",
+        "solo una vez",
+        "es la última vez",
+        "solo por ahora",
+        "para empezar nomás",
+        "una vez nada más"
+      ],
+      "category": "reclutamiento",
+      "weight": 7
+    },
+    {
+      "id": "REC-014",
+      "term": "sin riesgo",
+      "variants": [
+        "no hay riesgo",
+        "es seguro",
+        "no pasa nada",
+        "no hay bronca",
+        "no te va a pasar nada",
+        "está libre de peligro",
+        "sin peligro",
+        "no hay drama"
+      ],
+      "category": "reclutamiento",
+      "weight": 7
+    },
+    {
+      "id": "REC-015",
+      "term": "el movimiento",
+      "variants": [
+        "el movi",
+        "el movimiento va",
+        "estar en el movimiento",
+        "el negocio",
+        "la actividad",
+        "la empresa va bien"
+      ],
+      "category": "reclutamiento",
+      "weight": 6
+    },
+    {
+      "id": "REC-016",
+      "term": "la línea",
+      "variants": [
+        "estás en la línea",
+        "entrar a la línea",
+        "la línea de mando",
+        "la cadena",
+        "la estructura"
+      ],
+      "category": "reclutamiento",
+      "weight": 7
+    },
+    {
+      "id": "REC-017",
+      "term": "reclutando",
+      "variants": [
+        "estamos reclutando",
+        "buscamos gente",
+        "buscamos personas",
+        "andamos buscando",
+        "necesitamos gente",
+        "estamos contratando gente",
+        "andamos reclutando"
+      ],
+      "category": "reclutamiento",
+      "weight": 6
+    },
+    {
+      "id": "REC-018",
+      "term": "la banda te recibe",
+      "variants": [
+        "la banda",
+        "mi banda",
+        "somos la banda",
+        "con la banda",
+        "la bandita",
+        "la banda te espera",
+        "te recibe la banda"
+      ],
+      "category": "reclutamiento",
+      "weight": 5
+    },
+    {
+      "id": "REC-019",
+      "term": "te damos chance",
+      "variants": [
+        "te damos oportunidad",
+        "es tu oportunidad",
+        "aprovecha",
+        "no la dejes ir",
+        "no pierdas esto",
+        "oportunidad única",
+        "no te la pierdas"
+      ],
+      "category": "reclutamiento",
+      "weight": 5
+    },
+    {
+      "id": "REC-020",
+      "term": "carne de cañón",
+      "variants": [
+        "eres carne de cañón",
+        "pura carne de cañón",
+        "los nuevos",
+        "los basura",
+        "los desechables"
+      ],
+      "category": "slang_operativo",
+      "weight": 9
+    },
+    {
+      "id": "REC-023",
+      "term": "zancudo",
+      "variants": [
+        "zancudos",
+        "los zancudos",
+        "ser zancudo"
+      ],
+      "category": "slang_operativo",
+      "weight": 9
+    },
+    {
+      "id": "REC-024",
+      "term": "la estaca",
+      "variants": [
+        "mi estaca",
+        "la estaquita",
+        "la tropa",
+        "somos la tropa"
+      ],
+      "category": "slang_operativo",
+      "weight": 8
+    },
+    {
+      "id": "REC-025",
+      "term": "plaza caliente",
+      "variants": [
+        "la plaza está caliente",
+        "zona caliente",
+        "está caliente",
+        "calentar la plaza",
+        "la zona está caliente"
+      ],
+      "category": "slang_operativo",
+      "weight": 8
+    },
+    {
+      "id": "REC-026",
+      "term": "ponerse al tiro",
+      "variants": [
+        "ponte al tiro",
+        "ponerse cocodrilo",
+        "estar al tiro",
+        "al tiro",
+        "pónganse al tiro"
+      ],
+      "category": "slang_operativo",
+      "weight": 6
+    },
+    {
+      "id": "REC-027",
+      "term": "bravo",
+      "variants": [
+        "los bravos",
+        "un bravo",
+        "de bravo",
+        "sicario",
+        "los sicarios"
+      ],
+      "category": "slang_operativo",
+      "weight": 8
+    },
+    {
+      "id": "REC-028",
+      "term": "mula",
+      "variants": [
+        "ser mula",
+        "de mula",
+        "el burrero",
+        "pasador",
+        "ser pasador",
+        "cruzar el material"
+      ],
+      "category": "slang_operativo",
+      "weight": 8
+    },
+    {
+      "id": "REC-029",
+      "term": "cocinero",
+      "variants": [
+        "el cocinero",
+        "jalador",
+        "el jalador",
+        "técnico de laboratorio",
+        "laboratorio clandestino"
+      ],
+      "category": "slang_operativo",
+      "weight": 9
+    },
+    {
+      "id": "REC-030",
+      "term": "derecho de piso",
+      "variants": [
+        "la cuota",
+        "el impuesto",
+        "el cobro",
+        "hay que pagar la plaza",
+        "cobro de piso",
+        "la caseta",
+        "la maleta",
+        "el arreglo"
+      ],
+      "category": "slang_operativo",
+      "weight": 9
+    },
+    {
+      "id": "OE-002",
+      "term": "ganar bien",
+      "variants": [
+        "se gana bien",
+        "ganas bien",
+        "te va ir bien",
+        "harás buen dinero",
+        "pa ganar bien",
+        "ganancia buena",
+        "ganancia asegurada"
+      ],
+      "category": "oferta_economica",
+      "weight": 4
+    },
+    {
+      "id": "OE-004",
+      "term": "5 mil quincenales",
+      "variants": [
+        "5000 quincenales",
+        "cinco mil quincenales",
+        "diez mil mensuales",
+        "15 mil quincenales",
+        "60 mil al mes",
+        "buen salario",
+        "salario arriba del mercado"
+      ],
+      "category": "oferta_economica",
+      "weight": 6
+    },
+    {
+      "id": "OE-005",
+      "term": "objetos del juego",
+      "variants": [
+        "te doy skins",
+        "te doy v-bucks",
+        "te regalo robux",
+        "coins gratis",
+        "te doy items",
+        "te doy recursos",
+        "objetos gratis",
+        "te regalo cuentas",
+        "cuenta premium gratis",
+        "te paso recursos del juego"
+      ],
+      "category": "oferta_economica",
+      "weight": 7
+    },
+    {
+      "id": "OE-006",
+      "term": "fama en redes",
+      "variants": [
+        "te hago famoso",
+        "te doy seguidores",
+        "te hago viral",
+        "colaboración",
+        "te pongo famoso",
+        "ganarás seguidores",
+        "crezco tu cuenta",
+        "te hago influencer"
+      ],
+      "category": "oferta_economica",
+      "weight": 7
+    },
+    {
+      "id": "FD-001",
+      "term": "nómina",
+      "variants": [
+        "te pago en nómina",
+        "hay nómina",
+        "nómina quincenal",
+        "pago de nómina",
+        "nómina garantizada"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 5
+    },
+    {
+      "id": "FD-002",
+      "term": "prestaciones de ley",
+      "variants": [
+        "con prestaciones",
+        "prestaciones completas",
+        "seguro médico incluido",
+        "imss incluido",
+        "beneficios de ley",
+        "prestaciones superiores"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 5
+    },
+    {
+      "id": "FD-003",
+      "term": "capacitación pagada",
+      "variants": [
+        "te capacitamos",
+        "entrenamiento pagado",
+        "te enseñamos",
+        "adiestramiento",
+        "te damos entrenamiento",
+        "te formamos"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 7
+    },
+    {
+      "id": "FD-005",
+      "term": "vacantes disponibles hoy",
+      "variants": [
+        "vacante disponible",
+        "vacantes abiertas",
+        "aplica hoy",
+        "proceso de selección",
+        "reclutamiento de personal",
+        "gran oportunidad de vida",
+        "oferta de trabajo",
+        "solicitamos personal"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 4
+    },
+    {
+      "id": "FD-006",
+      "term": "bonos por desempeño",
+      "variants": [
+        "bono extra",
+        "extra por resultados",
+        "premio por cumplir",
+        "incentivo por meta",
+        "bonos por productividad"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 5
+    },
+    {
+      "id": "FD-007",
+      "term": "crecimiento a corto plazo",
+      "variants": [
+        "ascenso rápido",
+        "subes rápido",
+        "aquí se crece rápido",
+        "promoción rápida",
+        "en poco tiempo mandas",
+        "pronto mandas tú"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 6
+    },
+    {
+      "id": "FD-008",
+      "term": "supervisor de procesos",
+      "variants": [
+        "técnico de laboratorio",
+        "especialista en redes",
+        "supervisor industrial",
+        "técnico en telecomunicaciones",
+        "especialista en logística",
+        "procesos químicos avanzados"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 7
+    },
+    {
+      "id": "FD-009",
+      "term": "grupo de whatsapp de trabajo",
+      "variants": [
+        "te añado al grupo",
+        "grupo de trabajo",
+        "grupo oficial",
+        "grupo del equipo",
+        "grupo de la empresa",
+        "te meto al grupo"
+      ],
+      "category": "formalidad_deceptiva",
+      "weight": 6
+    },
+    {
+      "id": "LF-001",
+      "term": "central de autobuses",
+      "variants": [
+        "la central",
+        "central camionera",
+        "la terminal",
+        "nos vemos en la terminal",
+        "en la central te espero",
+        "la central de guadalajara",
+        "la central de reynosa"
+      ],
+      "category": "logistica_fisica",
+      "weight": 7
+    },
+    {
+      "id": "LF-004",
+      "term": "dónde vives",
+      "variants": [
+        "en qué colonia vives",
+        "dónde quedas",
+        "cerca de dónde estás",
+        "cuál es tu dirección",
+        "por dónde andas",
+        "de qué zona eres",
+        "en qué municipio"
+      ],
+      "category": "logistica_fisica",
+      "weight": 5
+    },
+    {
+      "id": "LF-006",
+      "term": "retén",
+      "variants": [
+        "hay retén",
+        "evitar el retén",
+        "libre de reten",
+        "sin retenes",
+        "jalapeños",
+        "la chota en el camino",
+        "los guachos están"
+      ],
+      "category": "logistica_fisica",
+      "weight": 8
+    },
+    {
+      "id": "LF-007",
+      "term": "entrevista presencial",
+      "variants": [
+        "nos vemos en persona",
+        "ven a conocernos",
+        "la entrevista es presencial",
+        "pasa a las oficinas",
+        "ven a la entrevista",
+        "te esperamos en las instalaciones"
+      ],
+      "category": "logistica_fisica",
+      "weight": 5
+    },
+    {
+      "id": "LF-008",
+      "term": "hotel",
+      "variants": [
+        "nos vemos en el hotel",
+        "en el hotel te espero",
+        "pasa al hotel",
+        "tiempo compartido",
+        "en las instalaciones del hotel"
+      ],
+      "category": "logistica_fisica",
+      "weight": 7
+    },
+    {
+      "id": "LF-009",
+      "term": "rancho",
+      "variants": [
+        "el rancho",
+        "el ranchito",
+        "un rancho",
+        "ven al rancho",
+        "te esperamos en el rancho"
+      ],
+      "category": "logistica_fisica",
+      "weight": 7
+    },
+    {
+      "id": "CC-002",
+      "term": "número nuevo",
+      "variants": [
+        "agrega este número nuevo",
+        "tengo número nuevo",
+        "escríbeme a este número",
+        "cambié de número",
+        "escribe aquí",
+        "este es mi número"
+      ],
+      "category": "cambio_canal",
+      "weight": 6
+    },
+    {
+      "id": "CC-004",
+      "term": "escríbeme en modo privado",
+      "variants": [
+        "modo privado",
+        "mensajes que desaparecen",
+        "chats efímeros",
+        "modo secreto",
+        "modo incógnito",
+        "mensajes temporales"
+      ],
+      "category": "cambio_canal",
+      "weight": 8
+    },
+    {
+      "id": "AI-004",
+      "term": "tus papás no te entienden",
+      "variants": [
+        "tu familia no te entiende",
+        "tus papás no te comprenden",
+        "yo sí te comprendo",
+        "tu familia te limita",
+        "ellos no te dejan crecer",
+        "tus papás no saben lo que es bueno para ti"
+      ],
+      "category": "aislamiento",
+      "weight": 8
+    },
+    {
+      "id": "AI-005",
+      "term": "te mereces algo mejor",
+      "variants": [
+        "mereces más",
+        "mereces mejor vida",
+        "tu familia no te merece",
+        "deberías estar mejor",
+        "tú vales más que eso",
+        "mereces más de lo que tienes"
+      ],
+      "category": "aislamiento",
+      "weight": 7
+    },
+    {
+      "id": "MS-001",
+      "term": "si no vienes eres rajón",
+      "variants": [
+        "si no vas eres rajón",
+        "el que no va es rajón",
+        "no seas rajón y ven",
+        "no te rayes ven",
+        "el que falta es cobarde",
+        "no te rajes"
+      ],
+      "category": "manipulacion_social",
+      "weight": 8
+    },
+    {
+      "id": "MS-002",
+      "term": "todos ya lo hicieron",
+      "variants": [
+        "ya lo hicieron todos",
+        "solo faltas tú",
+        "todos menos tú",
+        "el único que falta eres tú",
+        "ya todos lo tienen",
+        "todo el mundo ya fue"
+      ],
+      "category": "manipulacion_social",
+      "weight": 8
+    },
+    {
+      "id": "MS-004",
+      "term": "no seas miedoso",
+      "variants": [
+        "no tengas miedo",
+        "los miedosos no avanzan",
+        "el miedo es de los pendejos",
+        "no le tengas miedo",
+        "el que tiene miedo no llega",
+        "los cobardes no prosperan"
+      ],
+      "category": "manipulacion_social",
+      "weight": 7
+    },
+    {
+      "id": "MS-007",
+      "term": "traicionas al grupo",
+      "variants": [
+        "nos traicionas",
+        "eres un traidor",
+        "le fallas al grupo",
+        "nos defraudas",
+        "no eres leal",
+        "sapo",
+        "eres un sapo",
+        "eres un traicionero",
+        "eres un falso",
+        "no eres de los nuestros",
+        "no eres de la banda",
+        "no eres de mi confianza",
+        "no eres de confianza",
+        "no eres de fiar"
+      ],
+      "category": "manipulacion_social",
+      "weight": 9
+    },
+    {
+      "id": "MS-008",
+      "term": "así se gana el respeto",
+      "variants": [
+        "así te respetan",
+        "el respeto se gana",
+        "para que te respeten hay que",
+        "los débiles no llegan a nada",
+        "hay que hacerse respetar",
+        "los chingones hacen eso"
+      ],
+      "category": "manipulacion_social",
+      "weight": 7
+    },
+    {
+      "id": "MS-009",
+      "term": "lo que pasa en el grupo queda en el grupo",
+      "variants": [
+        "lo del grupo se queda aquí",
+        "entre nosotros",
+        "código del grupo",
+        "lo que pasa aquí nadie sabe",
+        "aquí no se filtra nada"
+      ],
+      "category": "manipulacion_social",
+      "weight": 8
+    },
+    {
+      "id": "PG-001",
+      "term": "el equipo te espera",
+      "variants": [
+        "todos te esperan",
+        "el grupo te espera",
+        "la banda te espera",
+        "te estamos esperando",
+        "todos están aquí menos tú"
+      ],
+      "category": "presion_de_grupo",
+      "weight": 7
+    },
+    {
+      "id": "PG-002",
+      "term": "serás el más popular",
+      "variants": [
+        "todos te van a admirar",
+        "vas a ser el más chingón",
+        "te van a respetar todos",
+        "serás el líder",
+        "te van a ver diferente",
+        "así te ganas el respeto"
+      ],
+      "category": "presion_de_grupo",
+      "weight": 7
+    },
+    {
+      "id": "PG-003",
+      "term": "nadie te ha invitado antes",
+      "variants": [
+        "por primera vez te estamos considerando",
+        "te elegimos a ti",
+        "no cualquiera entra aquí",
+        "somos selectivos",
+        "no invitamos a todos",
+        "no entra cualquier wey"
+      ],
+      "category": "presion_de_grupo",
+      "weight": 7
+    },
+    {
+      "id": "VJ-002",
+      "term": "cuenta premium",
+      "variants": [
+        "cuenta verificada gratis",
+        "te regalo una cuenta",
+        "cuenta con todo desbloqueado",
+        "cuenta de alto nivel",
+        "te paso la cuenta",
+        "account gratis"
+      ],
+      "category": "videojuegos_vector",
+      "weight": 8
+    },
+    {
+      "id": "VJ-003",
+      "term": "clan de jugadores",
+      "variants": [
+        "únete al clan",
+        "somos un clan",
+        "el clan te necesita",
+        "nuestro equipo de juego",
+        "el guild te espera",
+        "somos la mejor escuadra",
+        "el server",
+        "te vi en el server",
+        "en el server",
+        "mismo server"
+      ],
+      "category": "videojuegos_vector",
+      "weight": 6
+    },
+    {
+      "id": "VJ-004",
+      "term": "torneo con premio",
+      "variants": [
+        "torneo con dinero real",
+        "competencia con premio",
+        "torneos pagados",
+        "ganar dinero jugando",
+        "te pago por jugar",
+        "monetiza tu habilidad"
+      ],
+      "category": "videojuegos_vector",
+      "weight": 7
+    },
+    {
+      "id": "VJ-005",
+      "term": "te enseño trucos del juego",
+      "variants": [
+        "te enseño hacks",
+        "te paso cheats",
+        "trucos para el juego",
+        "hacks gratis",
+        "te doy aimbot",
+        "te paso el hack",
+        "trucos para ganar"
+      ],
+      "category": "videojuegos_vector",
+      "weight": 6
+    },
+    {
+      "id": "RS-002",
+      "term": "te vi en tiktok",
+      "variants": [
+        "te encontré en instagram",
+        "vi tu perfil",
+        "me gustó tu contenido",
+        "tienes potencial",
+        "tu cuenta está buena",
+        "eres muy talentoso para las redes"
+      ],
+      "category": "redes_sociales_vector",
+      "weight": 4
+    },
+    {
+      "id": "RS-003",
+      "term": "hashtag 4letras",
+      "variants": [
+        "#4letras",
+        "#mencho",
+        "#trabajoparalamaña",
+        "#lamaña",
+        "#cjng",
+        "#sinaloa",
+        "#trf",
+        "#cdg"
+      ],
+      "category": "señal_emoji",
+      "weight": 9
+    },
+    {
+      "id": "RS-004",
+      "term": "ninja encapuchado",
+      "variants": [
+        "ninja",
+        "encapuchado"
+      ],
+      "category": "señal_emoji",
+      "weight": 6
+    },
+    {
+      "id": "RS-005",
+      "term": "gallo mencho",
+      "variants": [
+        "el gallo",
+        "señor de los gallos"
+      ],
+      "category": "señal_emoji",
+      "weight": 8
+    },
+    {
+      "id": "RS-006",
+      "term": "chapiza chapitos",
+      "variants": [
+        "la chapiza",
+        "chapitos"
+      ],
+      "category": "señal_emoji",
+      "weight": 7
+    },
+    {
+      "id": "SI-001",
+      "term": "cuántos años tienes",
+      "variants": [
+        "qué edad tienes",
+        "cuándo cumples años",
+        "eres mayor de edad",
+        "ya tienes 18",
+        "cuántos tienes"
+      ],
+      "category": "solicitud_informacion",
+      "weight": 3
+    },
+    {
+      "id": "SI-002",
+      "term": "tienes familia",
+      "variants": [
+        "vives con tus papás",
+        "tienes hermanos",
+        "quién vive contigo",
+        "estás solo",
+        "vives solo",
+        "con quién vives",
+        "tienes familia en la ciudad"
+      ],
+      "category": "solicitud_informacion",
+      "weight": 5
+    },
+    {
+      "id": "SI-004",
+      "term": "en qué escuela estás",
+      "variants": [
+        "en qué primaria estás",
+        "en qué secundaria estás",
+        "en qué prepa estás",
+        "en qué primaria vas",
+        "en qué secundaria vas",
+        "en qué prepa vas",
+        "nombre de tu escuela",
+        "dónde estudias",
+        "qué turno tienes"
+      ],
+      "category": "solicitud_informacion",
+      "weight": 6
+    },
+    {
+      "id": "CN-001",
+      "term": "la vida del patrón",
+      "variants": [
+        "vida de narco",
+        "vivir bien de patrón",
+        "así se vive de mero mero",
+        "vida buchona",
+        "vivir buchón",
+        "vida de capo",
+        "así viven los que mandan",
+        "vida buchona es la mejor"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 7
+    },
+    {
+      "id": "CN-002",
+      "term": "mota",
+      "variants": [
+        "fumar mota",
+        "la mota",
+        "grifo",
+        "yerba",
+        "weed",
+        "pasto",
+        "churro",
+        "toque",
+        "porro",
+        "gallito",
+        "alfalfa",
+        "leña",
+        "greñuda",
+        "bacha",
+        "zacatecas"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 5
+    },
+    {
+      "id": "CN-003",
+      "term": "perico",
+      "variants": [
+        "la coca",
+        "cocaína",
+        "el polvo",
+        "nieve",
+        "cremita",
+        "talco",
+        "blanca nieves",
+        "maradona",
+        "gabacho",
+        "lavada",
+        "la blanca"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 8
+    },
+    {
+      "id": "CN-004",
+      "term": "cristal",
+      "variants": [
+        "hielo",
+        "vidrio",
+        "foco",
+        "cri-cri",
+        "muchacha",
+        "metanfetamina",
+        "meth",
+        "tina",
+        "ice droga",
+        "hielo droga"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 8
+    },
+    {
+      "id": "CN-006",
+      "term": "chiva",
+      "variants": [
+        "chocolate",
+        "basura",
+        "tecata",
+        "alquitrán",
+        "caballo",
+        "heroína"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 9
+    },
+    {
+      "id": "CN-008",
+      "term": "enfierrado",
+      "variants": [
+        "andamos enfierrados",
+        "empecherados",
+        "armados",
+        "con fierros",
+        "traemos fierros",
+        "bien armados"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 9
+    },
+    {
+      "id": "CN-009",
+      "term": "encobijado",
+      "variants": [
+        "encostalado",
+        "encajuelado",
+        "pozoleado",
+        "dar piso",
+        "quebrar",
+        "mochar",
+        "topón"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 9
+    },
+    {
+      "id": "CN-010",
+      "term": "los de arriba",
+      "variants": [
+        "el cartel",
+        "la maña",
+        "la organización",
+        "los que mandan",
+        "la gente de arriba",
+        "los jefes",
+        "la federación"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 6
+    },
+    {
+      "id": "SD-001",
+      "term": "oye",
+      "variants": [
+        "oiga",
+        "escúchame",
+        "necesito decirte algo",
+        "tengo algo para ti"
+      ],
+      "category": "señal_debil",
+      "weight": 1
+    },
+    {
+      "id": "SD-002",
+      "term": "te puedo ayudar",
+      "variants": [
+        "puedo ayudarte",
+        "quiero ayudarte",
+        "yo te ayudo",
+        "déjame ayudarte"
+      ],
+      "category": "señal_debil",
+      "weight": 2
+    },
+    {
+      "id": "SD-003",
+      "term": "te vi por aquí",
+      "variants": [
+        "cómo llegaste aquí",
+        "eres nuevo por aquí",
+        "no te había visto",
+        "de dónde eres"
+      ],
+      "category": "señal_debil",
+      "weight": 2
+    },
+    {
+      "id": "SD-004",
+      "term": "amigo",
+      "variants": [
+        "mi amigo",
+        "amigos",
+        "cuate",
+        "carnal",
+        "hermano",
+        "mano",
+        "compa",
+        "primo",
+        "bro"
+      ],
+      "category": "señal_debil",
+      "weight": 1
+    },
+    {
+      "id": "SD-005",
+      "term": "qué haces",
+      "variants": [
+        "en qué andas",
+        "cómo la llevas",
+        "qué onda",
+        "cómo estás",
+        "qué hay de nuevo"
+      ],
+      "category": "señal_debil",
+      "weight": 1
+    },
+    {
+      "id": "REC-031",
+      "term": "trabajo",
+      "variants": [
+        "trabajito",
+        "trabajillo",
+        "trabajote",
+        "trabajón",
+        "un trabajo",
+        "el trabajo",
+        "trabajito rápido",
+        "trabajillo fácil",
+        "trabajito sencillo",
+        "buen trabajo",
+        "hay trabajo",
+        "hay un trabajo",
+        "hay un trabajito",
+        "tengo trabajo",
+        "traigo trabajo",
+        "traje trabajo",
+        "trabajo bueno",
+        "trabajo de a madres",
+        "trabajote bueno",
+        "hay trabajito",
+        "hay trabajitos"
+      ],
+      "category": "reclutamiento",
+      "weight": 3
+    },
+    {
+      "id": "REC-032",
+      "term": "ayuda",
+      "variants": [
+        "necesito tu ayuda",
+        "me ayudas",
+        "me echas la mano",
+        "me das una mano",
+        "me ayudas con algo",
+        "te necesito para algo",
+        "necesito que me apoyes",
+        "apóyame",
+        "ayúdame",
+        "ayúdame con algo",
+        "necesito que me hagas un favor",
+        "me haces un paro",
+        "me das un paro",
+        "me harías un paro",
+        "párame el paro",
+        "me echas aguas",
+        "me echas una mano",
+        "échame la mano"
+      ],
+      "category": "reclutamiento",
+      "weight": 2
+    },
+    {
+      "id": "REC-033",
+      "term": "encargo",
+      "variants": [
+        "un encargo",
+        "el encargo",
+        "encárgate de algo",
+        "un encargo rápido",
+        "encárgate de esto",
+        "tengo un encargo",
+        "hay un encargo",
+        "hacerse cargo",
+        "hazte cargo",
+        "un encargo fácil",
+        "encargito",
+        "solo un encargo",
+        "encargo sencillo",
+        "encargo de nada",
+        "te encargo algo",
+        "te encargo esto",
+        "solo te encargo esto",
+        "nada más un encargito"
+      ],
+      "category": "reclutamiento",
+      "weight": 4
+    },
+    {
+      "id": "REC-034",
+      "term": "favor",
+      "variants": [
+        "un favor",
+        "el favor",
+        "hazme un favor",
+        "solo un favor",
+        "favorcito",
+        "hazme este favor",
+        "un favorcito nada más",
+        "solo necesito que me hagas un favor",
+        "es un favor sencillo",
+        "favor rápido",
+        "te pido un favor",
+        "pedirte un favor",
+        "necesito pedirte un favor",
+        "nada más un favor",
+        "un favor y ya",
+        "favorón",
+        "me harías un favorón"
+      ],
+      "category": "reclutamiento",
+      "weight": 3
+    },
+    {
+      "id": "REC-035",
+      "term": "quieres ganar dinero",
+      "variants": [
+        "quieres ganar lana",
+        "quieres ganar varo",
+        "quieres ganar feria",
+        "quieres ganar billete",
+        "quieres hacer dinero",
+        "quieres hacer lana",
+        "quieres juntarte dinero",
+        "quieres juntar varo",
+        "quieres feria extra",
+        "te gustaría ganar",
+        "te interesa ganar",
+        "ganar dinero fácil",
+        "ganar lana fácil",
+        "hacer dinero rápido",
+        "hacer lana rápido"
+      ],
+      "category": "reclutamiento",
+      "weight": 4
+    },
+    {
+      "id": "REC-036",
+      "term": "actividad",
+      "variants": [
+        "una actividad",
+        "la actividad",
+        "actividad rápida",
+        "actividad sencilla",
+        "actividad fácil",
+        "es una actividad",
+        "hay una actividad",
+        "la activi",
+        "participa en esto",
+        "participa",
+        "participa con nosotros",
+        "te unes a la actividad",
+        "te subes a la actividad",
+        "una actividadcita"
+      ],
+      "category": "reclutamiento",
+      "weight": 3
+    },
+    {
+      "id": "REC-037",
+      "term": "proyecto",
+      "variants": [
+        "un proyecto",
+        "el proyecto",
+        "proyectito",
+        "tengo un proyecto",
+        "hay un proyecto",
+        "es un proyecto",
+        "proyecto rápido",
+        "proyecto bueno",
+        "proyecto con buena lana",
+        "proyecto personal",
+        "mi proyecto",
+        "nuestro proyecto",
+        "proyecto interesante",
+        "te interesa el proyecto",
+        "proyecto redondo"
+      ],
+      "category": "reclutamiento",
+      "weight": 3
+    },
+    {
+      "id": "REC-038",
+      "term": "negocio",
+      "variants": [
+        "un negocio",
+        "el negocio",
+        "negocito",
+        "negociote",
+        "hay negocio",
+        "tengo negocio",
+        "buen negocio",
+        "negocio redondo",
+        "negocio fácil",
+        "negocio rápido",
+        "negocio seguro",
+        "te meto al negocio",
+        "entrar al negocio",
+        "meterte al negocio",
+        "el negocio va bien",
+        "el negocio está bueno",
+        "nuestro negocio",
+        "es un negociazo"
+      ],
+      "category": "reclutamiento",
+      "weight": 4
+    },
+    {
+      "id": "REC-039",
+      "term": "te invito",
+      "variants": [
+        "te invito a algo",
+        "te invito a esto",
+        "quieres que te invite",
+        "te quiero invitar",
+        "te queremos invitar",
+        "estás invitado",
+        "te invitamos",
+        "quieres venir",
+        "te puedo invitar a algo",
+        "tengo una invitación para ti",
+        "hay lugar para ti",
+        "quieres venir con nosotros"
+      ],
+      "category": "reclutamiento",
+      "weight": 2
+    },
+    {
+      "id": "REC-040",
+      "term": "te presento a alguien",
+      "variants": [
+        "mis amigos quieren conocerte",
+        "te van a caer bien mis amigos",
+        "te presento a unos amigos",
+        "unos cuates te quieren conocer",
+        "hay gente que quiere conocerte",
+        "te quiero presentar",
+        "te presento a la gente",
+        "te presentamos con el equipo",
+        "te quiero presentar con unos cuates",
+        "mis cuates te buscan",
+        "hay unos weyes que te quieren conocer"
+      ],
+      "category": "reclutamiento",
+      "weight": 5
+    },
+    {
+      "id": "OE-007",
+      "term": "te pago",
+      "variants": [
+        "te voy a pagar",
+        "te pagamos",
+        "hay pago",
+        "te doy algo",
+        "te doy una feria",
+        "te doy un billete",
+        "te doy lana",
+        "te doy varo",
+        "hay recompensa",
+        "hay lana",
+        "hay varo",
+        "hay feria",
+        "hay dinero",
+        "hay billete",
+        "te caen billetitos",
+        "caen billetes",
+        "cae buena lana",
+        "te cae bien la feria",
+        "te cae bien el varo",
+        "hay pagón"
+      ],
+      "category": "oferta_economica",
+      "weight": 4
+    },
+    {
+      "id": "OE-008",
+      "term": "dinero extra",
+      "variants": [
+        "lana extra",
+        "varo extra",
+        "feria extra",
+        "billete extra",
+        "ingreso extra",
+        "ganancia extra",
+        "ingresito extra",
+        "lanita extra",
+        "varito extra",
+        "un extra",
+        "para un extra",
+        "pa un extra",
+        "pa completar el gasto",
+        "para completar",
+        "completar el gasto",
+        "para el gasto",
+        "para tus gastos",
+        "para tus vicios"
+      ],
+      "category": "oferta_economica",
+      "weight": 4
+    },
+    {
+      "id": "OE-009",
+      "term": "no te va a faltar nada",
+      "variants": [
+        "no les faltará nada",
+        "no te faltará",
+        "te vas a llenar",
+        "te vas a hartar de lana",
+        "no te va a faltar el billete",
+        "vas a tener de sobra",
+        "no vas a batallar",
+        "no batallarás",
+        "con nosotros no batalles",
+        "estás fijo",
+        "te la vas a vivir bien",
+        "vida chida garantizada",
+        "te garantizo que no bateallas"
+      ],
+      "category": "oferta_economica",
+      "weight": 5
+    },
+    {
+      "id": "OE-010",
+      "term": "comisión",
+      "variants": [
+        "te doy comisión",
+        "hay comisión",
+        "ganas comisión",
+        "comisiones altas",
+        "buena comisión",
+        "comisionista",
+        "a comisión",
+        "trabajar a comisión",
+        "ganamos comisión",
+        "comisión por entrega",
+        "comisión por pieza",
+        "por cada uno te doy",
+        "por cada viaje te doy",
+        "te pago por pieza",
+        "pago por viaje",
+        "pago por entrega",
+        "te va por entrega"
+      ],
+      "category": "oferta_economica",
+      "weight": 5
+    },
+    {
+      "id": "OE-011",
+      "term": "te presto dinero",
+      "variants": [
+        "te presto lana",
+        "te presto varo",
+        "te hago el préstamo",
+        "préstamo sin intereses",
+        "te lo fío",
+        "quédate con el cambio",
+        "quédate con el vuelto",
+        "te regalo la diferencia",
+        "te la regalo",
+        "es tuya la feria",
+        "quédatela",
+        "te la dejo",
+        "te adelanto",
+        "te adelanto la paga",
+        "aquí tienes para empezar"
+      ],
+      "category": "oferta_economica",
+      "weight": 5
+    },
+    {
+      "id": "OE-012",
+      "term": "bien pagado",
+      "variants": [
+        "está bien pagado",
+        "es bien pagado",
+        "muy bien pagado",
+        "paga bien",
+        "paga muy bien",
+        "es lo más bien pagado",
+        "lo mejor pagado",
+        "el mejor pago",
+        "el pago es excelente",
+        "paga de huevos",
+        "paga chido",
+        "paga nais",
+        "paga a mares",
+        "paga un chingo",
+        "paga un resto",
+        "paga a todo dar",
+        "el pago es de a madres"
+      ],
+      "category": "oferta_economica",
+      "weight": 5
+    },
+    {
+      "id": "OE-013",
+      "term": "sin mucho esfuerzo",
+      "variants": [
+        "con poco esfuerzo",
+        "casi sin hacer nada",
+        "sin hacer mucho",
+        "es muy fácil ganar",
+        "es facilísimo ganar",
+        "se gana sin chambar",
+        "sin tanto trabajo",
+        "sin sudar",
+        "sin romperte el lomo",
+        "sin fajarte",
+        "sin mucho rollo",
+        "es pan comido",
+        "nada de trabajo pesado",
+        "trabajo sencillo",
+        "no hay que esforzarse mucho",
+        "casi es gratis la lana"
+      ],
+      "category": "oferta_economica",
+      "weight": 6
+    },
+    {
+      "id": "LF-010",
+      "term": "paquete",
+      "variants": [
+        "el paquete",
+        "un paquete",
+        "paquetito",
+        "paquetón",
+        "paquetes",
+        "el paquetito",
+        "los paquetes",
+        "hay un paquete",
+        "traer el paquete",
+        "llevar un paquete",
+        "recoger el paquete",
+        "entregar el paquete",
+        "el bulto",
+        "los bultos",
+        "un bulto",
+        "bulto pequeño",
+        "bulto sencillo",
+        "la encomienda",
+        "la encomendita",
+        "lo que ya sabes"
+      ],
+      "category": "logistica_fisica",
+      "weight": 5
+    },
+    {
+      "id": "LF-011",
+      "term": "envío",
+      "variants": [
+        "un envío",
+        "el envío",
+        "envíos",
+        "hacer un envío",
+        "hacer envíos",
+        "enviar algo",
+        "enviar esto",
+        "mandar algo",
+        "manda esto",
+        "llevar un envío",
+        "recoger un envío",
+        "hacer la entrega",
+        "la entrega",
+        "entregar algo",
+        "hacer las entregas",
+        "el enviadito",
+        "hacer el movimiento",
+        "mover el paquete",
+        "hacer la movida"
+      ],
+      "category": "logistica_fisica",
+      "weight": 4
+    },
+    {
+      "id": "LF-012",
+      "term": "llevar algo",
+      "variants": [
+        "llevar esto",
+        "llevar eso",
+        "llevarle algo a alguien",
+        "llevarle esto",
+        "lleva esto",
+        "lleva aquí",
+        "llévame esto",
+        "lleva esto a donde te digo",
+        "llevar de aquí hasta allá",
+        "de aquí a allá",
+        "solo llevas y regresas",
+        "solo llevas y ya",
+        "llevas esto y se acabó",
+        "nada más lo llevas",
+        "lo llevas y te pago",
+        "lo llevas y listo"
+      ],
+      "category": "logistica_fisica",
+      "weight": 5
+    },
+    {
+      "id": "LF-013",
+      "term": "traer algo",
+      "variants": [
+        "tráeme algo",
+        "tráeme esto",
+        "tráeme aquello",
+        "trae el paquete",
+        "trae el mandado",
+        "trae lo que te digo",
+        "trae eso",
+        "trae nada más esto",
+        "lo que traes",
+        "traes algo",
+        "¿traes algo?",
+        "tráelo",
+        "nada más traes esto y ya",
+        "es solo traer",
+        "solo traes y ya"
+      ],
+      "category": "logistica_fisica",
+      "weight": 4
+    },
+    {
+      "id": "LF-014",
+      "term": "vuelta rápida",
+      "variants": [
+        "es una vuelta",
+        "solo das una vuelta",
+        "das una vuelta y ya",
+        "nada más das una vuelta",
+        "vuelta y ya",
+        "es una vueltita",
+        "solo un viaje",
+        "es un viaje nada más",
+        "viaje rápido",
+        "viajito rápido",
+        "ida y vuelta",
+        "nada más ida y vuelta",
+        "solo vas y vuelves",
+        "un ratito y ya",
+        "un momento y ya",
+        "nomás es un momento"
+      ],
+      "category": "logistica_fisica",
+      "weight": 5
+    },
+    {
+      "id": "LF-015",
+      "term": "punto de encuentro",
+      "variants": [
+        "punto de entrega",
+        "punto de recogida",
+        "lugar de encuentro",
+        "nos encontramos",
+        "te espero en",
+        "espérame en",
+        "chécate el punto",
+        "el punto",
+        "el punto de encuentro",
+        "el punto de entrega",
+        "te marco el punto",
+        "te mando el punto",
+        "el spot",
+        "el spotcito",
+        "ahí en el spot",
+        "te digo el spot",
+        "en el punto",
+        "en el lugar"
+      ],
+      "category": "logistica_fisica",
+      "weight": 6
+    },
+    {
+      "id": "LF-016",
+      "term": "cruzar",
+      "variants": [
+        "cruzar algo",
+        "cruzar el material",
+        "cruzar el paquete",
+        "cruzar la línea",
+        "cruzar la frontera",
+        "cruzar por el puente",
+        "cruzar con algo",
+        "pasar algo por aquí",
+        "pasar con el paquete",
+        "pasar el bulto",
+        "pasar la encomienda",
+        "pasarlo sin que se den cuenta",
+        "pasar sin problema",
+        "hacer el cruce",
+        "el cruce",
+        "un cruce rápido"
+      ],
+      "category": "logistica_fisica",
+      "weight": 7
+    },
+    {
+      "id": "LF-017",
+      "term": "te recogemos",
+      "variants": [
+        "te paso el carro",
+        "te presto el carro",
+        "hay carro",
+        "hay troca",
+        "te van a recoger",
+        "manda carro por ti",
+        "te mandamos carro",
+        "hay transporte",
+        "te damos ride",
+        "te damos aventón",
+        "hay aventón",
+        "te llevamos",
+        "vamos por ti",
+        "mandamos por ti",
+        "te buscamos",
+        "hay quien te lleve",
+        "hay carrito"
+      ],
+      "category": "logistica_fisica",
+      "weight": 6
+    },
+    {
+      "id": "LF-018",
+      "term": "dame tu dirección",
+      "variants": [
+        "dime tu dirección",
+        "me das tu domicilio",
+        "dónde vives exactamente",
+        "dónde quedas exactamente",
+        "a qué colonia vas",
+        "a qué colonia llegas",
+        "en qué parte vives exactamente",
+        "qué tan lejos estás",
+        "cuánto tardas en llegar",
+        "qué tan cerca estás de",
+        "a qué dirección te mandamos",
+        "a qué dirección llegamos"
+      ],
+      "category": "logistica_fisica",
+      "weight": 6
+    },
+    {
+      "id": "SD-006",
+      "term": "hola",
+      "variants": [
+        "ey",
+        "ey tú",
+        "hey",
+        "hey tú",
+        "holaa",
+        "holaaa",
+        "holi",
+        "holis",
+        "qué onda",
+        "qué pedo",
+        "qué rollo",
+        "qué tranza",
+        "qué pasó",
+        "buenas",
+        "qué tal",
+        "cómo andas",
+        "cómo te va",
+        "qué hay",
+        "qué cuentas",
+        "qué onda wey",
+        "qué onda mano",
+        "qué onda carnal"
+      ],
+      "category": "señal_debil",
+      "weight": 1
+    },
+    {
+      "id": "SD-007",
+      "term": "te puedo ofrecer algo",
+      "variants": [
+        "te ofrezco algo",
+        "tengo algo para ofrecerte",
+        "te tengo algo",
+        "traigo algo para ti",
+        "te traigo algo",
+        "tengo algo que te conviene",
+        "te puede interesar",
+        "te interesa algo",
+        "te podría interesar algo",
+        "hay algo para ti",
+        "tengo algo bueno",
+        "te cuento algo bueno",
+        "te platico algo interesante",
+        "tengo algo interesante para ti"
+      ],
+      "category": "señal_debil",
+      "weight": 3
+    },
+    {
+      "id": "SD-008",
+      "term": "tienes tiempo ahorita",
+      "variants": [
+        "cuándo tienes tiempo",
+        "cuándo puedes",
+        "cuándo estás libre",
+        "cuándo estás disponible",
+        "tienes chance",
+        "cuándo tienes chance",
+        "a qué hora puedes",
+        "a qué hora estás",
+        "cuándo te desocupas",
+        "cuándo sales de la escuela",
+        "a qué hora sales",
+        "cuándo llegas a tu casa",
+        "a qué hora llegas",
+        "cuándo estás solo en casa"
+      ],
+      "category": "señal_debil",
+      "weight": 2
+    },
+    {
+      "id": "SD-010",
+      "term": "cómo te llamas",
+      "variants": [
+        "cuál es tu nombre",
+        "dime tu nombre",
+        "cómo te dicen",
+        "cuál es tu apodo",
+        "cómo te conocen",
+        "dime tu nombre completo",
+        "nombre completo",
+        "tu nombre y apellido",
+        "cómo te presentaron",
+        "a nombre de quién",
+        "con qué nombre te ponen",
+        "cómo te pusieron"
+      ],
+      "category": "señal_debil",
+      "weight": 2
+    },
+    {
+      "id": "SI-006",
+      "term": "a qué escuela vas",
+      "variants": [
+        "en qué escuela estás",
+        "en qué prepa",
+        "en qué secundaria",
+        "en qué primaria",
+        "en qué facultad",
+        "en qué uni",
+        "en qué universidad",
+        "estudias o trabajas",
+        "qué grado cursas",
+        "en qué turno",
+        "mañana o tarde",
+        "en qué escuela andas",
+        "cuál es tu escuela",
+        "de qué escuela eres",
+        "qué escuela estudias"
+      ],
+      "category": "solicitud_informacion",
+      "weight": 4
+    },
+    {
+      "id": "SI-007",
+      "term": "tu número de teléfono",
+      "variants": [
+        "dame tu número",
+        "me das tu número",
+        "cuál es tu número",
+        "tu WhatsApp",
+        "me das tu WhatsApp",
+        "cuál es tu WhatsApp",
+        "tu telegram",
+        "tu celular",
+        "me pasas tu cel",
+        "dame tu cel",
+        "cuál es tu cel",
+        "tu teléfono",
+        "te busco al cel",
+        "te llamo al número",
+        "me das tu contacto",
+        "por dónde te hablo",
+        "cómo te localizo"
+      ],
+      "category": "solicitud_informacion",
+      "weight": 3
+    },
+    {
+      "id": "SI-008",
+      "term": "conoces a alguien más",
+      "variants": [
+        "tienes cuates que quieran",
+        "tus amigos estarían interesados",
+        "ellos también querrían",
+        "tus primos también",
+        "hay más gente como tú",
+        "puedes traer a alguien más",
+        "trae a alguien",
+        "invita a alguien",
+        "trae a un amigo",
+        "trae a un cuate",
+        "trae a tu hermano",
+        "tus cuates también pueden",
+        "puedes recomendarme a alguien"
+      ],
+      "category": "solicitud_informacion",
+      "weight": 5
+    },
+    {
+      "id": "MS-010",
+      "term": "no te arrepentirás",
+      "variants": [
+        "no vas a arrepentirte",
+        "no te vas a arrepentir",
+        "te lo juro que no te arrepientes",
+        "es la mejor decisión",
+        "vas a agradecer",
+        "me lo vas a agradecer",
+        "vas a quedar agradecido",
+        "lo mejor que te puede pasar",
+        "esto te cambia la vida",
+        "te cambia la vida",
+        "tu vida cambia con esto",
+        "cambia tu vida hoy",
+        "no lo vas a lamentar",
+        "no te va a pesar"
+      ],
+      "category": "manipulacion_social",
+      "weight": 5
+    },
+    {
+      "id": "MS-011",
+      "term": "confía en mí",
+      "variants": [
+        "confíate",
+        "confíate de mí",
+        "te lo juro",
+        "palabra",
+        "lo juro",
+        "juro que es bueno",
+        "créeme",
+        "créeme que sí",
+        "ya te digo yo",
+        "yo te lo garantizo",
+        "te lo garantizo",
+        "yo respondo",
+        "yo te respondo",
+        "tengo mi palabra",
+        "bajo mi palabra",
+        "con mi palabra",
+        "palabra de honor"
+      ],
+      "category": "manipulacion_social",
+      "weight": 4
+    },
+    {
+      "id": "MS-013",
+      "term": "eres especial",
+      "variants": [
+        "eres diferente",
+        "no eres como los demás",
+        "eres más listo que los demás",
+        "eres más maduro",
+        "pareces mayor",
+        "eres más avanzado",
+        "eres inteligente",
+        "eres muy inteligente para tu edad",
+        "tienes capacidades",
+        "tienes talento",
+        "eres lo que necesitamos",
+        "eres el indicado para esto",
+        "eres perfecto para esto",
+        "eres único",
+        "no hay otro como tú"
+      ],
+      "category": "manipulacion_social",
+      "weight": 5
+    },
+    {
+      "id": "MS-014",
+      "term": "no hay peligro",
+      "variants": [
+        "no hay peligro alguno",
+        "está limpio",
+        "está libre",
+        "no hay problema",
+        "no hay pedos",
+        "no hay broncas",
+        "sin broncas",
+        "sin pedos",
+        "sin drama",
+        "no hay drama",
+        "es libre de riesgo",
+        "libre de peligro",
+        "cero peligro",
+        "cero riesgo",
+        "riesgo cero",
+        "es lo más seguro del mundo",
+        "no te pasa nada",
+        "no les pasa nada"
+      ],
+      "category": "manipulacion_social",
+      "weight": 7
+    },
+    {
+      "id": "AI-007",
+      "term": "que no lo sepa tu mamá",
+      "variants": [
+        "que no se enteren tus jefes",
+        "que no lo sepa tu papá",
+        "no le digas a tu familia",
+        "sin avisarle a nadie",
+        "sin que se enteren en tu casa",
+        "tu familia no entiende",
+        "ellos no van a entender",
+        "tus papás se van a oponer",
+        "tus papás son anticuados",
+        "ellos no lo van a apoyar",
+        "ellos te lo prohíben pero no saben",
+        "ellos no saben nada de esto"
+      ],
+      "category": "aislamiento",
+      "weight": 9
+    },
+    {
+      "id": "AI-008",
+      "term": "es nuestro secreto",
+      "variants": [
+        "solo tú y yo sabemos",
+        "nadie más tiene que saber",
+        "es de nosotros",
+        "secreto entre nosotros",
+        "nadie afuera sabe",
+        "la gente afuera no entiende",
+        "los de afuera no lo saben",
+        "eso se queda en la familia",
+        "eso no sale de aquí",
+        "entre los del grupo nada más",
+        "solo el grupo sabe",
+        "esto queda entre los que estamos"
+      ],
+      "category": "aislamiento",
+      "weight": 8
+    },
+    {
+      "id": "CN-011",
+      "term": "todos lo hacen",
+      "variants": [
+        "todo el mundo lo hace",
+        "lo hace todo el barrio",
+        "lo hace mis amigos",
+        "lo hacen en mi colonia",
+        "no es nada del otro mundo",
+        "es lo normal por aquí",
+        "es lo que se usa",
+        "es lo que hace la gente",
+        "es lo que se hace aquí",
+        "aquí es normal",
+        "en esta colonia es normal",
+        "es la costumbre aquí",
+        "es lo de hoy",
+        "está de moda",
+        "lo hacen hasta los morros"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 5
+    },
+    {
+      "id": "CN-012",
+      "term": "es muy fácil",
+      "variants": [
+        "facilísimo",
+        "no tiene ciencia",
+        "no tiene chiste",
+        "no tiene ningún chiste",
+        "no tiene dificultad",
+        "cualquiera lo puede hacer",
+        "hasta un niño lo hace",
+        "lo hace cualquiera",
+        "es de lo más fácil",
+        "no necesitas experiencia",
+        "no necesitas saber nada",
+        "no necesitas estudios",
+        "no hay que saber nada",
+        "se aprende rápido",
+        "en un ratito aprendes"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 4
+    },
+    {
+      "id": "CN-013",
+      "term": "no te comprometes",
+      "variants": [
+        "sin comprometerte",
+        "sin mancharte",
+        "no te manchas",
+        "no te involucras",
+        "solo lo haces y ya",
+        "haces tu parte y ya",
+        "no te complica nada",
+        "no te vas a meter en nada",
+        "tú no te metes en problemas",
+        "no vas a tener problemas",
+        "sin meterte en problemas",
+        "sin lío"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 6
+    },
+    {
+      "id": "CN-014",
+      "term": "la policía no llega aquí",
+      "variants": [
+        "la policía no se entera",
+        "los policías no se dan cuenta",
+        "la ley no llega",
+        "no llega la ley",
+        "aquí no llega la ley",
+        "aquí no hay ley",
+        "tenemos arreglo con la ley",
+        "están arreglados",
+        "están comprados",
+        "están de nuestro lado",
+        "la tira está de nuestro lado",
+        "aquí mandamos nosotros",
+        "aquí no entra nadie"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 8
+    },
+    {
+      "id": "CN-015",
+      "term": "no es para tanto",
+      "variants": [
+        "tampoco es tan grave",
+        "no es tan serio",
+        "no es tan importante",
+        "no es tan arriesgado",
+        "exageras",
+        "le estás moviendo",
+        "no dramatices",
+        "no es nada",
+        "es mínimo",
+        "es una pequeñez",
+        "no vale la pena preocuparse",
+        "te preocupas de más",
+        "muy dramático",
+        "tan miedoso",
+        "exagerado",
+        "no es para tanto drama"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 5
+    },
+    {
+      "id": "PG-004",
+      "term": "ya están todos menos tú",
+      "variants": [
+        "tus cuates ya entraron",
+        "ya entraron tus amigos",
+        "ya están todos",
+        "ya estamos todos menos tú",
+        "todos menos tú",
+        "ya se apuntaron todos",
+        "ya van todos",
+        "todos van",
+        "van todos tus cuates",
+        "los demás ya dijeron que sí",
+        "ya están de acuerdo todos",
+        "todos están de acuerdo",
+        "todos menos tú ya saben",
+        "eres el único que falta",
+        "nada más tú falta"
+      ],
+      "category": "presion_de_grupo",
+      "weight": 7
+    },
+    {
+      "id": "PG-005",
+      "term": "no seas cobarde",
+      "variants": [
+        "no te rajes",
+        "no seas gallina",
+        "no la armes de tos",
+        "no la armes de drama",
+        "no seas miedoso",
+        "no seas mamón",
+        "no seas cagón",
+        "no seas payaso",
+        "no le tengas miedo",
+        "le tienes miedo",
+        "no seas buey",
+        "no seas chillón",
+        "pon los güevos",
+        "sé hombre",
+        "atrévete",
+        "no te me rayes",
+        "no me falles"
+      ],
+      "category": "presion_de_grupo",
+      "weight": 7
+    },
+    {
+      "id": "PG-006",
+      "term": "no te quedes fuera",
+      "variants": [
+        "no te excluyas",
+        "no te quedes atrás",
+        "no te pierdas de esto",
+        "no seas el que dijo que no",
+        "no vayas a quedar mal",
+        "no nos vayas a fallar",
+        "no nos falles",
+        "no me falles",
+        "quédate con nosotros",
+        "somos tu grupo",
+        "somos tus cuates",
+        "no te cierres",
+        "no te pongas difícil",
+        "no te rajes ahorita"
+      ],
+      "category": "presion_de_grupo",
+      "weight": 6
+    },
+    {
+      "id": "CC-005",
+      "term": "escríbeme por privado",
+      "variants": [
+        "búscame por el otro lado",
+        "me escribes por el otro chat",
+        "por el chat privado",
+        "me mandas mensaje por el privado",
+        "por inbox",
+        "por DM",
+        "mándame DM",
+        "por mensaje directo",
+        "te mando request",
+        "acepta mi request",
+        "te agrego",
+        "acéptame",
+        "acéptame el request",
+        "te busco por allá",
+        "te busco por el otro"
+      ],
+      "category": "cambio_canal",
+      "weight": 5
+    },
+    {
+      "id": "CC-006",
+      "term": "aquí no podemos hablar",
+      "variants": [
+        "no podemos hablar aquí",
+        "aquí nos pueden ver",
+        "nos están viendo",
+        "aquí hay mucha gente",
+        "aquí no es el lugar",
+        "busquemos otro lado",
+        "hablemos en otro lado",
+        "en privado",
+        "en otro lugar",
+        "fuera de aquí",
+        "vámonos a otro lado",
+        "en otro chat",
+        "cambiémonos de chat",
+        "este no es el lugar para hablar",
+        "aquí no es seguro"
+      ],
+      "category": "cambio_canal",
+      "weight": 7
+    },
+    {
+      "id": "RS-007",
+      "term": "te vi en redes",
+      "variants": [
+        "te encontré en instagram",
+        "te encontré en tiktok",
+        "te vi en tiktok",
+        "te vi en instagram",
+        "vi tu perfil",
+        "vi tus fotos",
+        "me llamó la atención tu perfil",
+        "encontré tu perfil",
+        "me saliste en el feed",
+        "me saliste en el explore",
+        "me saliste en sugeridos",
+        "me recomendó tu perfil",
+        "llegué a tu perfil por casualidad"
+      ],
+      "category": "redes_sociales_vector",
+      "weight": 4
+    },
+    {
+      "id": "RS-008",
+      "term": "sígueme",
+      "variants": [
+        "sígueme en instagram",
+        "sígueme en tiktok",
+        "sígueme en mis redes",
+        "dale follow",
+        "dale follow back",
+        "follow back",
+        "te sigo si me sigues",
+        "siguémonos",
+        "añádeme",
+        "agrégame",
+        "mándame solicitud",
+        "manda solicitud de amistad",
+        "te busco para seguirte",
+        "búscame en insta",
+        "búscame en tiktok"
+      ],
+      "category": "redes_sociales_vector",
+      "weight": 3
+    },
+    {
+      "id": "VJ-006",
+      "term": "jugamos juntos",
+      "variants": [
+        "jugamos una partida",
+        "partida conmigo",
+        "juegas conmigo",
+        "te reto",
+        "acepta el reto",
+        "acepta el duelo",
+        "juega en mi servidor",
+        "entra al server",
+        "entra al servidor",
+        "entra al squad",
+        "entra al clan",
+        "únete al clan",
+        "únete al equipo",
+        "mi equipo te necesita",
+        "te necesitamos en el equipo",
+        "falta alguien en el squad",
+        "falta un jugador"
+      ],
+      "category": "videojuegos_vector",
+      "weight": 3
+    },
+    {
+      "id": "VJ-007",
+      "term": "te enseño a ganar",
+      "variants": [
+        "te puedo enseñar",
+        "yo te entreno",
+        "te entreno gratis",
+        "te coaching",
+        "te doy coaching",
+        "te hago pro",
+        "te hago profesional",
+        "te saco del bronce",
+        "te subo de rango",
+        "te mejoro el rango",
+        "aprende conmigo",
+        "te llevo al top",
+        "llegamos al top juntos",
+        "con mi ayuda subes",
+        "bajo mi tutela llegas lejos",
+        "yo te guío"
+      ],
+      "category": "videojuegos_vector",
+      "weight": 4
+    },
+    {
+      "id": "CN-016",
+      "term": "percocet",
+      "variants": [
+        "perco",
+        "percs",
+        "perc 30",
+        "perc30",
+        "m30",
+        "oxicodona",
+        "oxycodona",
+        "oxy"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 8
+    },
+    {
+      "id": "CN-017",
+      "term": "xanax",
+      "variants": [
+        "xan",
+        "xans",
+        "xanny",
+        "bars",
+        "barritas",
+        "zannies"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 7
+    },
+    {
+      "id": "CN-018",
+      "term": "adderall",
+      "variants": [
+        "addy",
+        "addys",
+        "addie",
+        "anfetas",
+        "anfetamina",
+        "anfetaminas"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 7
+    },
+    {
+      "id": "CN-019",
+      "term": "mdma",
+      "variants": [
+        "extasis",
+        "éxtasis",
+        "tacha"
+      ],
+      "category": "contenido_normalizado",
+      "weight": 8,
+      "requires_corroboration": true
+    },
+    {
+      "id": "REC-041",
+      "term": "busca chavos",
+      "variants": [
+        "buscamos chavos",
+        "busca gente joven",
+        "buscamos morros",
+        "necesitamos chavos",
+        "ocupamos chavos",
+        "busca morros",
+        "buscamos jóvenes",
+        "gente joven para el trabajo",
+        "chavos que quieran ganar"
+      ],
+      "category": "reclutamiento",
+      "weight": 6
+    },
+    {
+      "id": "REC-042",
+      "term": "un chavo como tú",
+      "variants": [
+        "un morro como tú",
+        "alguien como tú",
+        "chavos como tú",
+        "gente como tú",
+        "te elegí a ti",
+        "te busco a ti",
+        "por eso te busco a ti",
+        "tú eres el indicado para esto"
+      ],
+      "category": "reclutamiento",
+      "weight": 6
+    },
+    {
+      "id": "REC-043",
+      "term": "no preguntes qué llevas",
+      "variants": [
+        "no preguntes qué es",
+        "no preguntes qué llevas",
+        "mejor no sepas qué es",
+        "no abras el paquete",
+        "no lo abras",
+        "no revises lo que llevas",
+        "tú solo entrégalo",
+        "nomás lo entregas y ya",
+        "no tienes que saber qué es"
+      ],
+      "category": "reclutamiento",
+      "weight": 8
+    },
+    {
+      "id": "SI-020",
+      "term": "foto de tu credencial",
+      "variants": [
+        "foto de tu ine",
+        "manda tu credencial",
+        "foto de tu identificación",
+        "tu identificación oficial",
+        "credencial de la escuela",
+        "foto de tu acta",
+        "acta de nacimiento",
+        "comprobante de tu edad",
+        "manda tu ine",
+        "necesito tu credencial"
+      ],
+      "category": "solicitud_informacion",
+      "weight": 8
+    },
+    {
+      "id": "OE-020",
+      "term": "me lo pagas con un favor",
+      "variants": [
+        "me lo pagas con un favorcito",
+        "quedas a mano con un mandado",
+        "trabajo a cambio de la deuda",
+        "con unos mandados queda saldado",
+        "me ayudas y quedamos a mano",
+        "luego me haces un favor",
+        "con un favor me pagas",
+        "lo pagas trabajando",
+        "quedas limpio con una vuelta"
+      ],
+      "category": "oferta_economica",
+      "weight": 7
+    },
+    {
+      "id": "OE-021",
+      "term": "ya me toca cobrar",
+      "variants": [
+        "ya me toca cobrarte",
+        "me debes",
+        "todo lo que te di no fue gratis",
+        "ya es hora de que pagues",
+        "no ha sido gratis",
+        "es hora de cobrar",
+        "ahora me toca a mí",
+        "te tengo que cobrar el favor"
+      ],
+      "category": "oferta_economica",
+      "weight": 6
+    },
+    {
+      "id": "REC-044",
+      "term": "nadie se mete contigo",
+      "variants": [
+        "nadie te va a molestar",
+        "los que te molestan van a parar",
+        "con nosotros nadie te toca",
+        "te protegemos de los que te hacen menos",
+        "dejan de molestarte",
+        "nosotros te respaldamos en la escuela"
+      ],
+      "category": "reclutamiento",
+      "weight": 6
+    },
+    {
+      "id": "REC-045",
+      "term": "el bisne",
+      "variants": [
+        "al bisne",
+        "jalas al bisne",
+        "le entras al bisne",
+        "al negocio",
+        "el bisnes",
+        "hacer bisne",
+        "andar en el bisne",
+        "el jale del bisne"
+      ],
+      "category": "reclutamiento",
+      "weight": 7
+    }
+  ]
+}

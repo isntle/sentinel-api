@@ -16,7 +16,7 @@ def analyze(
     db: Session = Depends(get_db),
     api_key: ApiKey = Depends(require_client_key),
 ):
-    result = handle_escalation(escalation, db=db)
+    result = handle_escalation(escalation, db=db, api_key_hash=api_key.key_hash)
     record_eligible_analysis(db, escalation, result, api_key.key_hash)
     return JSONResponse(
         status_code=200,

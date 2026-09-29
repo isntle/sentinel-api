@@ -1,12 +1,16 @@
 from sqlalchemy.orm import Session
 from src.models.conversation import SyncMessageRequest, Message
-from src.services.db_service import save_message, get_session_history
+from src.services.db_service import save_message, get_session_history, _public_session_id
 from typing import List
 import uuid
 
-def handle_sync_message(db: Session, request: SyncMessageRequest) -> List[Message]:
+def handle_sync_message(
+    db: Session,
+    request: SyncMessageRequest,
+    api_key_hash: str | None = None,
+) -> List[Message]:
     """
-    Usa la sesión de DB para persistir el mensaje y recuperar el historial real.
+    Usa la sesión de DB para persistir el mensaje y recuperar el historial real con aislamiento por tenant.
     """
     # 1. Generar el id del mensaje en la API
     full_message = Message(
@@ -17,17 +21,17 @@ def handle_sync_message(db: Session, request: SyncMessageRequest) -> List[Messag
         timestamp=request.message.timestamp,
     )
 
-    save_message(db, full_message)
+    save_message(db, full_message, api_key_hash=api_key_hash)
     
-    # 2. Recuperar todo el historial de esa sesión desde la DB
-    db_history = get_session_history(db, request.message.session_id)
+    # 2. Recuperar todo el historial de esa sesión desde la DB filtrando por tenant
+    db_history = get_session_history(db, request.message.session_id, api_key_hash=api_key_hash)
     
     # 3. Convertir los objetos de la DB al formato que el SDK entiende (Pydantic)
     history = [
         Message(
             id=m.id,
             user_id=m.user_id,
-            session_id=m.session_id,
+            session_id=_public_session_id(m.session_id),
             content=m.content,
             timestamp=m.timestamp
         ) for m in db_history

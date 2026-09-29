@@ -396,8 +396,11 @@ def run_scraper(db: Session) -> dict:
     results = {
         "articles_scanned": 0,
         "candidates_found": 0,
+        "candidates_prefiltered": 0,
+        "candidates_classified": 0,
         "terms_staged": 0,
         "terms_rejected": 0,
+        "terms_omitted": 0,
         "errors": [],
     }
 
@@ -444,24 +447,32 @@ def run_scraper(db: Session) -> dict:
         except Exception as e:
             results["errors"].append(f"RSS: {str(e)}")
 
-    # Deduplicar para esta corrida
+    # Deduplicar por término+fuente: conservar diversidad multi-fuente.
     seen = set()
     unique_candidates = []
     for c in all_candidates:
-        key = c["term"].lower().strip()
-        if key not in seen and not _term_already_known(db, key):
+        term_key = c["term"].lower().strip()
+        key = (term_key, c["source"])
+        if key not in seen and not _term_already_known(db, term_key):
             seen.add(key)
             unique_candidates.append(c)
 
     results["candidates_found"] = len(unique_candidates)
 
-    # Guardar sightings en BD
+    from src.services.data_provenance_service import resolve_canonical_origin, calculate_content_hash
+
+    # Guardar sightings en BD con procedencia canónica y deduplicación por contenido
     for c in unique_candidates:
+        context_str = c.get("context", "")
+        canon_origin = resolve_canonical_origin(c["source"])
+        c_hash = calculate_content_hash(context_str)
         sighting = CandidateSighting(
             id=str(uuid.uuid4()),
             term=c["term"].lower().strip(),
             source=c["source"],
-            context=c.get("context", ""),
+            canonical_origin=canon_origin,
+            content_hash=c_hash,
+            context=context_str,
             seen_at=int(datetime.now().timestamp())
         )
         db.add(sighting)
@@ -469,12 +480,16 @@ def run_scraper(db: Session) -> dict:
 
     # Obtener el Top 25 maduro y puntuarlo, luego clasificar con Groq
     batch_candidates = get_mature_candidates(db, limit=25)
+    results["candidates_prefiltered"] = len(batch_candidates)
     if batch_candidates:
         try:
             batch_results = classify_terms_batch(db, batch_candidates)
+            results["candidates_classified"] = len(batch_results)
             for res in batch_results:
                 if res.get("staged"):
                     results["terms_staged"] += 1
+                elif res.get("omitted"):
+                    results["terms_omitted"] += 1
                 else:
                     results["terms_rejected"] += 1
         except Exception as e:

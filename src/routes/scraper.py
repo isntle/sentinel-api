@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from src.database import get_db
 from src.services.scraper_service import run_scraper
-from src.models.db_models import AnalysisRecord, ScraperRun, Message
+from src.models.db_models import AnalysisRecord, ScraperRun, Message, TelemetrySnapshot
 import time
 import uuid
 import json
@@ -18,6 +18,9 @@ def purge_expired(db: Session, days: int = 7):
     # jamás se incluyen en este job.
     now = int(time.time())
     db.query(AnalysisRecord).filter(AnalysisRecord.purge_at < now).delete(
+        synchronize_session=False
+    )
+    db.query(TelemetrySnapshot).filter(TelemetrySnapshot.purge_at < now).delete(
         synchronize_session=False
     )
     db.commit()

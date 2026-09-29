@@ -3,7 +3,7 @@ Migración de producción para Railway.
 
 Este proyecto no usa Alembic — las tablas nuevas del modelo (DatasetVersion,
 RejectedTerm, CandidateSighting, Feedback, ApiKey, ScraperRun, AnalysisRecord,
-EvidencePackage) las crea solo
+EvidencePackage, TelemetrySnapshot) las crea solo
 `Base.metadata.create_all()` en el arranque de main.py, porque SQLAlchemy sí
 sabe crear tablas que no existen. Lo que NO hace solo es alterar una tabla que
 ya existe en producción para agregarle una columna nueva — por eso hot_terms
@@ -19,7 +19,8 @@ src/database.py) — útil para probar el script antes de correrlo en Railway.
 Qué hace, en orden:
   1. Crea todas las tablas del modelo que falten (no toca las que ya existen).
   2. Agrega la columna `staged` a `hot_terms` si no existe.
-  3. Si no hay ninguna fila en `api_keys`, crea una llave admin y una client,
+  3. Agrega columnas de procedencia, revisión y calibración si faltan.
+  4. Si no hay ninguna fila en `api_keys`, crea una llave admin y una client,
      e IMPRIME LAS LLAVES EN CLARO UNA SOLA VEZ (no quedan en ningún lado más
      que en la terminal — guárdalas ahora).
 
@@ -67,8 +68,64 @@ def add_staged_column_if_missing():
     print("   Columna agregada.")
 
 
+def add_feedback_calibration_columns_if_missing():
+    """Agrega procedencia, revisión y auditoría sin perder filas legacy."""
+    print("3. Revisando columnas de feedback/calibración...")
+    inspector = inspect(engine)
+    dialect = engine.dialect.name
+    desired = {
+        "feedback": {
+            "api_key_hash": "VARCHAR",
+            "dataset_version": "INTEGER",
+            "term_ids": "TEXT",
+            "feedback_fingerprint": "VARCHAR",
+        },
+        "hot_terms": {
+            "initial_weight": "FLOAT",
+            "reviewed": (
+                "BOOLEAN DEFAULT FALSE" if dialect == "postgresql" else "BOOLEAN DEFAULT 0"
+            ),
+        },
+        "dataset_versions": {
+            "status": "VARCHAR DEFAULT 'published'",
+            "base_version": "INTEGER",
+            "calibration_run_id": "VARCHAR",
+            "audit_json": "TEXT",
+        },
+        "telemetry_snapshots": {
+            "shadow_model_counts": "TEXT NOT NULL DEFAULT '{}'",
+            "intervention_observed_count": "INTEGER NOT NULL DEFAULT 0",
+            "allow_count": "INTEGER NOT NULL DEFAULT 0",
+            "silent_observe_count": "INTEGER NOT NULL DEFAULT 0",
+            "soft_warn_count": "INTEGER NOT NULL DEFAULT 0",
+            "hard_block_count": "INTEGER NOT NULL DEFAULT 0",
+            "protective_action_counts": "TEXT NOT NULL DEFAULT '{}'",
+        },
+    }
+
+    with engine.begin() as conn:
+        for table, columns in desired.items():
+            existing = {column["name"] for column in inspector.get_columns(table)}
+            for name, sql_type in columns.items():
+                if name not in existing:
+                    conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {name} {sql_type}"))
+
+        conn.execute(text("UPDATE hot_terms SET initial_weight = weight WHERE initial_weight IS NULL"))
+        conn.execute(text("UPDATE hot_terms SET reviewed = 0 WHERE reviewed IS NULL"))
+        conn.execute(text("UPDATE dataset_versions SET status = 'published' WHERE status IS NULL"))
+        conn.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS ix_feedback_fingerprint "
+            "ON feedback (feedback_fingerprint)"
+        ))
+        conn.execute(text(
+            "CREATE UNIQUE INDEX IF NOT EXISTS ix_dataset_calibration_run "
+            "ON dataset_versions (calibration_run_id)"
+        ))
+    print("   OK.")
+
+
 def create_initial_api_keys_if_missing():
-    print("3. Revisando API keys existentes...")
+    print("4. Revisando API keys existentes...")
     db = SessionLocal()
     try:
         existing_count = db.query(db_models.ApiKey).count()
@@ -113,6 +170,7 @@ def main():
 
     create_missing_tables()
     add_staged_column_if_missing()
+    add_feedback_calibration_columns_if_missing()
     create_initial_api_keys_if_missing()
 
     print("\nMigración completa.")

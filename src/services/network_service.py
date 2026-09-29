@@ -28,16 +28,18 @@ SPRAY_MIN_SESSIONS = 3
 SCRIPT_REUSE_MIN_SESSIONS = 2    # mismo guion en ≥2 sesiones (distintas víctimas)
 
 
-def _hash(value: str) -> str:
+def _hash(value: str, api_key_hash: str | None = None) -> str:
+    if api_key_hash:
+        return hashlib.sha256(f"{ACTOR_HASH_SALT}:{api_key_hash}:{value}".encode()).hexdigest()
     return hashlib.sha256(f"{ACTOR_HASH_SALT}:{value}".encode()).hexdigest()
 
 
-def _script_fingerprint(texts: list[str]) -> str | None:
+def _script_fingerprint(texts: list[str], api_key_hash: str | None = None) -> str | None:
     """
     Huella estable del 'guion' del actor: normaliza el texto, toma los primeros
     ~120 caracteres (la apertura, que es lo que se copia-pega entre víctimas) y
-    lo hashea. No se guarda el texto — solo su hash. Dos aperturas idénticas
-    producen la misma huella aunque cambien nombres/detalles al final.
+    lo hashea con salt de tenant. No se guarda el texto — solo su hash. Dos aperturas
+    idénticas del mismo tenant producen la misma huella.
     """
     joined = " ".join(texts).lower()
     normalized = re.sub(r"[^a-záéíóúñ0-9 ]", "", joined)
@@ -45,6 +47,8 @@ def _script_fingerprint(texts: list[str]) -> str | None:
     if len(normalized) < 12:
         return None
     opening = normalized[:120]
+    if api_key_hash:
+        return hashlib.sha256(f"{api_key_hash}:{opening}".encode()).hexdigest()[:32]
     return hashlib.sha256(opening.encode()).hexdigest()[:32]
 
 
@@ -55,6 +59,7 @@ def record_and_score(
     aggressor_texts: list[str],
     risk: str,
     categories: list[str],
+    api_key_hash: str | None = None,
 ) -> dict:
     """
     Registra el avistamiento del actor (si hay agresor identificado) y devuelve
@@ -64,12 +69,12 @@ def record_and_score(
     if not aggressor_user_id:
         return {"actor_risk": "NONE", "signals": [], "distinct_sessions": 0}
 
-    actor_hash = _hash(aggressor_user_id)
-    session_hash = _hash(session_id)
-    script_fp = _script_fingerprint(aggressor_texts)
+    actor_hash = _hash(aggressor_user_id, api_key_hash)
+    session_hash = _hash(session_id, api_key_hash)
+    script_fp = _script_fingerprint(aggressor_texts, api_key_hash)
     now = int(time.time())
 
-    # Persistir el avistamiento (solo hashes y agregados).
+    # Persistir el avistamiento (solo hashes y agregados por tenant).
     db.add(ActorSighting(
         id=str(uuid.uuid4()),
         actor_hash=actor_hash,
@@ -78,14 +83,18 @@ def record_and_score(
         risk=risk,
         categories=",".join(categories) if categories else None,
         created_at=now,
+        api_key_hash=api_key_hash,
     ))
     db.commit()
 
-    return _score_actor(db, actor_hash, script_fp, now)
+    return _score_actor(db, actor_hash, script_fp, now, api_key_hash)
 
 
-def _score_actor(db: Session, actor_hash: str, script_fp: str | None, now: int) -> dict:
-    sightings = db.query(ActorSighting).filter(ActorSighting.actor_hash == actor_hash).all()
+def _score_actor(db: Session, actor_hash: str, script_fp: str | None, now: int, api_key_hash: str | None = None) -> dict:
+    query = db.query(ActorSighting).filter(ActorSighting.actor_hash == actor_hash)
+    if api_key_hash is not None:
+        query = query.filter(ActorSighting.api_key_hash == api_key_hash)
+    sightings = query.all()
     distinct_sessions = {s.session_hash for s in sightings}
     signals: list[str] = []
 
@@ -98,9 +107,12 @@ def _score_actor(db: Session, actor_hash: str, script_fp: str | None, now: int) 
     if len(recent) >= SPRAY_MIN_SESSIONS:
         signals.append("SPRAY")
 
-    # Guion reutilizado: la misma apertura contra víctimas (sesiones) distintas.
+    # Guion reutilizado: la misma apertura contra víctimas (sesiones) distintas dentro del mismo tenant.
     if script_fp:
-        same_script = db.query(ActorSighting).filter(ActorSighting.script_fp == script_fp).all()
+        same_script_query = db.query(ActorSighting).filter(ActorSighting.script_fp == script_fp)
+        if api_key_hash is not None:
+            same_script_query = same_script_query.filter(ActorSighting.api_key_hash == api_key_hash)
+        same_script = same_script_query.all()
         script_sessions = {s.session_hash for s in same_script}
         if len(script_sessions) >= SCRIPT_REUSE_MIN_SESSIONS:
             signals.append("SCRIPT_REUSE")
@@ -121,9 +133,12 @@ def _score_actor(db: Session, actor_hash: str, script_fp: str | None, now: int) 
     }
 
 
-def top_risky_actors(db: Session, limit: int = 50) -> list[dict]:
+def top_risky_actors(db: Session, limit: int = 50, api_key_hash: str | None = None) -> list[dict]:
     """Vista administrativa: actores con más sesiones distintas (posible red)."""
-    sightings = db.query(ActorSighting).all()
+    query = db.query(ActorSighting)
+    if api_key_hash is not None:
+        query = query.filter(ActorSighting.api_key_hash == api_key_hash)
+    sightings = query.all()
     by_actor: dict[str, dict] = {}
     for s in sightings:
         a = by_actor.setdefault(s.actor_hash, {"sessions": set(), "scripts": set(), "last_seen": 0})

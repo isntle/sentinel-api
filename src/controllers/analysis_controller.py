@@ -4,7 +4,11 @@ from src.services.analysis_service import analyze_conversation
 from src.services.network_service import record_and_score
 from src.services.intervention import build_intervention_plan
 
-def handle_escalation(escalation: EscalationRequest, db: Session | None = None):
+def handle_escalation(
+    escalation: EscalationRequest,
+    db: Session | None = None,
+    api_key_hash: str | None = None,
+):
     """
     Recibe la escalación del SDK (análisis local + mensajes), delega el análisis
     profundo a la IA, evalúa el riesgo de red del actor cruzando sesiones, y
@@ -28,6 +32,7 @@ def handle_escalation(escalation: EscalationRequest, db: Session | None = None):
             aggressor_texts=aggressor_texts,
             risk=result.get("stage") or escalation.risk,
             categories=escalation.uniqueCategories,
+            api_key_hash=api_key_hash,
         )
         result["network"] = network
         # Un actor con reclutamiento sistemático fuerza el bloqueo aunque el
