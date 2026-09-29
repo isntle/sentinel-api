@@ -16,7 +16,7 @@ El SDK de Sentinel realiza un análisis local ultrarrápido, pero hay casos dond
 
 | Herramienta | Uso |
 |---|---|
-| Python 3.13 | Lenguaje principal |
+| Python 3.14 | Lenguaje principal (versión del venv y del CI) |
 | FastAPI | Framework web y validación |
 | SQLAlchemy | ORM para manejo de base de datos |
 | SQLite | Base de datos (prototipo) |
@@ -70,7 +70,7 @@ Las sesiones se purgan automáticamente a los 7 días para no retener datos de m
 
 ### Requisitos
 
-- Python 3.11+
+- Python 3.14
 - Una API key de [Groq](https://console.groq.com)
 
 ### Pasos
@@ -91,6 +91,8 @@ pip install -r requirements.txt
 # Crear un archivo .env en la raíz del proyecto con:
 # GROQ_API_KEY=tu_api_key_aqui
 # OPENROUTER_API_KEY=tu_api_key_de_respaldo_opcional
+# CORS_ALLOWED_ORIGINS=https://app.cliente.mx,https://admin.cliente.mx
+# TELEMETRY_TOKEN_SECRET=secreto_aleatorio_independiente
 
 # 5. Levantar el servidor
 uvicorn main:app --reload
@@ -105,6 +107,11 @@ El servidor queda disponible en `http://localhost:8000`.
 | `GROQ_API_KEY` | API key de Groq Cloud |
 | `OPENROUTER_API_KEY` | Opcional. Activa OpenRouter como respaldo cuando Groq falla |
 | `OPENROUTER_MODEL` | Opcional. Default: `meta-llama/llama-3.3-70b-instruct:free` |
+| `CORS_ALLOWED_ORIGINS` | Lista separada por comas de orígenes web autorizados. Default vacío: CORS cerrado |
+| `TELEMETRY_TOKEN_SECRET` | Secreto aleatorio para tokens `sendBeacon` de cinco minutos. Obligatorio cambiarlo en producción |
+
+No uses `*` para CORS en producción. Cada plataforma debe registrar sus orígenes
+exactos; los dominios no declarados no reciben autorización del navegador.
 
 ---
 
@@ -235,6 +242,12 @@ Todas las respuestas siguen la estructura:
 
 Para uso exclusivo del equipo de desarrollo. Permite gestionar mensajes sin acceder directamente a la base de datos.
 
+El dashboard de términos está en `/admin/review`. El navegador solicitará
+HTTP Basic: usa cualquier nombre de usuario (por ejemplo `sentinel`) y la API
+key con scope `admin` como contraseña. Nunca agregues la llave a la URL; los
+query strings quedan en logs e historial. Los endpoints programáticos siguen
+aceptando `X-API-Key`.
+
 | Método | Ruta | Descripción |
 |---|---|---|
 | `GET` | `/api/v1/admin/messages` | Listar todos los mensajes |
@@ -303,13 +316,13 @@ Para uso exclusivo del equipo de desarrollo. Permite gestionar mensajes sin acce
 | Por qué este modelo | El 70B entiende el contexto conversacional, la ironía y la jerga criminal mexicana coloquial ("jale", "plaza", "mandados"). Un modelo más pequeño generaría más falsos negativos en un dominio donde el costo de equivocarse es alto. |
 | Infraestructura | Groq LPU — latencia promedio < 2 segundos para análisis completo |
 
-**La IA nunca recibe mensajes que el motor local clasificó como seguros.** El pipeline de 3 capas (NormalizerLayer → V3Layer → V4Layer) actúa como filtro inteligente — la IA solo interviene cuando hay una sospecha real.
+**La IA nunca recibe mensajes que el motor local clasificó como seguros.** El pipeline local multicapa actúa como filtro inteligente — la IA solo interviene cuando el motor queda genuinamente incierto.
 
 ---
 
 ## Deploy
 
-La API está desplegada en **Railway** con Python 3.13.
+La API está desplegada en **Railway**; el entorno local y CI están fijados en Python 3.14.
 
 - URL de producción: *(agregar URL pública de Railway)*
 - Health check: `GET /health`

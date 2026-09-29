@@ -1,6 +1,6 @@
 # Política de Seguridad de Sentinel
 
-Última actualización: 2026-07-06
+Última actualización: 2026-07-17
 
 Sentinel es una infraestructura de detección de riesgos conversacionales para menores de edad. Operamos bajo el principio de privilegio mínimo y retención mínima de datos.
 
@@ -9,6 +9,8 @@ Sentinel es una infraestructura de detección de riesgos conversacionales para m
 - **API Stateless (Casi)**: La API solo recibe sesiones escaladas (riesgo > LOW). No almacenamos PII (Información Personal Identificable).
 - **Cifrado**: Todo el tráfico viaja forzosamente por TLS 1.3 (HTTPS).
 - **Credenciales**: Todas las API Keys se almacenan utilizando algoritmos de hash criptográfico unidireccional (SHA-256). No es posible recuperar una llave perdida.
+- **CORS cerrado por default**: las integraciones de navegador solo funcionan desde orígenes declarados expresamente en `CORS_ALLOWED_ORIGINS`; no se habilita `*` automáticamente.
+- **Telemetría por beacon**: `sendBeacon` usa tokens HMAC de cinco minutos limitados al endpoint de telemetría. La API key larga permanece en headers y nunca se inserta en una URL de telemetría.
 
 ## 2. Retención de Datos
 Sentinel no es un archivo histórico. 

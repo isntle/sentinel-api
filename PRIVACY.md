@@ -41,4 +41,17 @@ Para detectar a un mismo actor que contacta a múltiples menores con el mismo gu
 ## 4. No Monetización de Datos
 No vendemos, rentamos, ni compartimos el contenido de las conversaciones con terceros publicitarios. Tampoco utilizamos conversaciones de tus usuarios para entrenar modelos fundacionales públicos.
 
+## 5. Telemetría agregada opcional
+
+La telemetría del SDK está desactivada por defecto y requiere activación expresa de la plataforma cliente. Solo recibe contadores agregados: volumen de análisis, distribución de riesgo, IDs editoriales de términos V3, resoluciones locales/API y concordancia del clasificador sombra.
+
+Los snapshots de telemetría **no contienen texto de mensajes, IDs de usuario, IDs de sesión, timestamps de mensajes, prompts ni vectores de features**. Se vinculan únicamente al hash de la API key del cliente para aislamiento operativo y se purgan automáticamente a los 90 días.
+
+Cuando un cliente activa un clasificador en modo sombra, los snapshots pueden
+incluir un identificador opaco de versión del modelo, la versión del esquema de
+features y contadores de concordancia/discrepancia. No se reciben probabilidades
+individuales, vectores de features, mensajes ni identificadores de conversación.
+
+Para envíos de navegador, la API key no se coloca en la URL. El SDK la intercambia mediante un header por un token firmado, efímero y limitado a telemetría, con vigencia de cinco minutos. El token puede aparecer temporalmente en logs de URL, pero no permite acceder a análisis, mensajes, administración ni otros endpoints.
+
 [REVISAR CON ABOGADO ANTES DE PUBLICAR EN ENTORNO CORPORATIVO]
